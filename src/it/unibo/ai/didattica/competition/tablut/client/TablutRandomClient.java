@@ -1,16 +1,10 @@
 package it.unibo.ai.didattica.competition.tablut.client;
 
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
 import java.io.IOException;
-import java.net.Socket;
 import java.net.UnknownHostException;
-import java.security.InvalidParameterException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
-
-import com.google.gson.Gson;
 
 import it.unibo.ai.didattica.competition.tablut.domain.*;
 import it.unibo.ai.didattica.competition.tablut.domain.State.Turn;
@@ -164,10 +158,10 @@ public class TablutRandomClient extends TablutClient {
 							selected = pawns.get(0);
 						}
 
-						String from = this.getCurrentState().getBox(selected[0], selected[1]);
+						String from = this.getCurrentState().getCellEncoding(selected[0], selected[1]);
 
 						selected = empty.get(new Random().nextInt(empty.size() - 1));
-						String to = this.getCurrentState().getBox(selected[0], selected[1]);
+						String to = this.getCurrentState().getCellEncoding(selected[0], selected[1]);
 
 						try {
 							a = new Action(from, to, State.Turn.WHITE);
@@ -250,10 +244,10 @@ public class TablutRandomClient extends TablutClient {
 					;
 					while (!found) {
 						selected = pawns.get(new Random().nextInt(pawns.size() - 1));
-						String from = this.getCurrentState().getBox(selected[0], selected[1]);
+						String from = this.getCurrentState().getCellEncoding(selected[0], selected[1]);
 
 						selected = empty.get(new Random().nextInt(empty.size() - 1));
-						String to = this.getCurrentState().getBox(selected[0], selected[1]);
+						String to = this.getCurrentState().getCellEncoding(selected[0], selected[1]);
 
 						try {
 							a = new Action(from, to, State.Turn.BLACK);

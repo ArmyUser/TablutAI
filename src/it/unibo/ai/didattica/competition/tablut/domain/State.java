@@ -7,128 +7,74 @@ import java.util.Arrays;
 /**
  * Abstract class for a State of a game We have a representation of the board
  * and the turn
- * 
- * @author Andrea Piretti
- *
  */
 public abstract class State {
 
 	/**
 	 * Turn represent the player that has to move or the end of the game(A win
 	 * by a player or a draw)
-	 * 
-	 * @author A.Piretti
 	 */
-	public enum Turn {
-		WHITE("W"), BLACK("B"), WHITEWIN("WW"), BLACKWIN("BW"), DRAW("D");
-		private final String turn;
-
-		private Turn(String s) {
-			turn = s;
-		}
-
-		public boolean equalsTurn(String otherName) {
-			return (otherName == null) ? false : turn.equals(otherName);
-		}
-
-		public String toString() {
-			return turn;
-		}
-	}
+	private final char WW = '1';
+	private final char BW = '0';
+	private final char D = 'D';
 
 	/**
-	 * 
 	 * Pawn represents the content of a box in the board
-	 * 
-	 * @author A.Piretti
-	 *
 	 */
-	public enum Pawn {
-		EMPTY("O"), WHITE("W"), BLACK("B"), THRONE("T"), KING("K");
-		private final String pawn;
+	private final char W = 'W';
+	private final char B = 'W';
+	private final char E = 'E';
+	private final char T = 'T';
+	private final char K = 'K';
 
-		private Pawn(String s) {
-			pawn = s;
-		}
-		
-		public static Pawn fromString(String s) {
-			switch (s) {
-			case "O":
-				return Pawn.EMPTY;
-			case "W":
-				return Pawn.WHITE;
-			case "B":
-				return Pawn.BLACK;
-			case "K":
-				return Pawn.KING;
-			case "T":
-				return Pawn.THRONE;
-			default:
-				return null;
-			}
-		}
 
-		public boolean equalsPawn(String otherPawn) {
-			return (otherPawn == null) ? false : pawn.equals(otherPawn);
-		}
+	protected char board[][];
+	protected char turn;
 
-		public String toString() {
-			return pawn;
-		}
-
-	}
-
-	protected Pawn board[][];
-	protected Turn turn;
-
-	public State() {
-		super();
-	}
-
-	public Pawn[][] getBoard() {
+	public char[][] getBoard() {
 		return board;
 	}
 
 	public String boardString() {
-		StringBuffer result = new StringBuffer();
-		for (int i = 0; i < this.board.length; i++) {
-			for (int j = 0; j < this.board.length; j++) {
-				result.append(this.board[i][j].toString());
-				if (j == 8) {
-					result.append("\n");
-				}
+		StringBuilder result = new StringBuilder();
+		for (int i = 0; i < board.length; i++) {
+			for (int j = 0; j < board.length; j++) {
+				result.append(board[i][j]);
+				if (j == 8) result.append("\n");
+
 			}
 		}
 		return result.toString();
-	}
+	}//boardString
 
 	@Override
 	public String toString() {
-		StringBuffer result = new StringBuffer();
+		StringBuilder result = new StringBuilder();
 
 		// board
 		result.append("");
-		result.append(this.boardString());
+		result.append(boardString());
 
 		result.append("-");
 		result.append("\n");
 
-		// TURNO
-		result.append(this.turn.toString());
+		// TURN
+		result.append(turn);
 
 		return result.toString();
-	}
+	}//toString
 
 	public String toLinearString() {
-		StringBuffer result = new StringBuffer();
+		StringBuilder result = new StringBuilder();
 
 		// board
-		result.append("");
-		result.append(this.boardString().replace("\n", ""));
-		result.append(this.turn.toString());
+		for (int i = 0; i < board.length; i++)
+			for (int j = 0; j < board.length; j++)
+				result.append(board[i][j]);
+		result.append(turn);
 
 		return result.toString();
-	}
+	}//toLinearString
 
 	/**
 	 * this function tells the pawn inside a specific box on the board
@@ -139,9 +85,9 @@ public abstract class State {
 	 *            represents the column of the specific box
 	 * @return is the pawn of the box
 	 */
-	public Pawn getPawn(int row, int column) {
-		return this.board[row][column];
-	}
+	public char getPawn(int row, int column) {
+		return board[row][column];
+	}//getPawn
 
 	/**
 	 * this function remove a specified pawn from the board
@@ -153,20 +99,20 @@ public abstract class State {
 	 * 
 	 */
 	public void removePawn(int row, int column) {
-		this.board[row][column] = Pawn.EMPTY;
-	}
+		board[row][column] = E;
+	}//removePawn
 
-	public void setBoard(Pawn[][] board) {
+	public void setBoard(char[][] board) {
 		this.board = board;
-	}
+	}//setBoard
 
-	public Turn getTurn() {
+	public char getTurn() {
 		return turn;
-	}
+	}//getTurn
 
-	public void setTurn(Turn turn) {
+	public void setTurn(char turn) {
 		this.turn = turn;
-	}
+	}//setTurn
 
 	@Override
 	public boolean equals(Object obj) {
@@ -174,7 +120,7 @@ public abstract class State {
 			return true;
 		if (obj == null)
 			return false;
-		if (this.getClass() != obj.getClass())
+		if (!(obj instanceof State))
 			return false;
 		State other = (State) obj;
 		if (this.board == null) {
@@ -185,43 +131,42 @@ public abstract class State {
 				return false;
 			if (this.board.length != other.board.length)
 				return false;
-			if (this.board[0].length != other.board[0].length)
-				return false;
 			for (int i = 0; i < other.board.length; i++)
 				for (int j = 0; j < other.board[i].length; j++)
-					if (!this.board[i][j].equals(other.board[i][j]))
+					if (this.board[i][j] != other.board[i][j])
 						return false;
 		}
 		if (this.turn != other.turn)
 			return false;
 		return true;
-	}
+	}//equals
 
 	@Override
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
 		result = prime * result + ((this.board == null) ? 0 : deepHashCode(board));
-		result = prime * result + ((this.turn == null) ? 0 : this.turn.hashCode());
+		result = prime * result + Character.hashCode(this.turn);
 		return result;
-	}
+	}//hashCode
 	
-	private static <T> int deepHashCode(T[][] matrix) {
+	private static int deepHashCode(char[][] matrix) {
 		int tmp[] = new int[matrix.length];
 		for (int i = 0; i < matrix.length; i++) {
 			tmp[i] = Arrays.hashCode(matrix[i]);
 		}
 		return Arrays.hashCode(tmp);
-	}
+	}//deepHashCode
 
-	public String getBox(int row, int column) {
+	public String getCellEncoding(int row, int column) {
 		String ret;
 		char col = (char) (column + 97);
 		ret = col + "" + (row + 1);
 		return ret;
-	}
+	}//getCellEncoding
 
 	public State clone() {
+
 		Class<? extends State> stateclass = this.getClass();
 		Constructor<? extends State> cons = null;
 		State result = null;
@@ -233,8 +178,8 @@ public abstract class State {
 			e.printStackTrace();
 		}
 
-		Pawn oldboard[][] = this.getBoard();
-		Pawn newboard[][] = result.getBoard();
+		char oldboard[][] = this.getBoard();
+		char newboard[][] = result.getBoard();
 
 		for (int i = 0; i < this.board.length; i++) {
 			for (int j = 0; j < this.board[i].length; j++) {
@@ -245,22 +190,19 @@ public abstract class State {
 		result.setBoard(newboard);
 		result.setTurn(this.turn);
 		return result;
-	}
+	}//clone
 
 	/**
 	 * Counts the number of checkers of a specific color on the board. Note: the king is not taken into account for white, it must be checked separately
 	 * @param color The color of the checker that will be counted. It is possible also to use EMPTY to count empty cells.
 	 * @return The number of cells of the board that contains a checker of that color.
 	 */
-	public int getNumberOf(Pawn color) {
+	public int getNumberOf(char color) {
 		int count = 0;
-		for (int i = 0; i < board.length; i++) {
-			for (int j = 0; j < board[i].length; j++) {
+		for (int i = 0; i < board.length; i++)
+			for (int j = 0; j < board[i].length; j++)
 				if (board[i][j] == color)
 					count++;
-			}
-		}
 		return count;
-	}
-
-}
+	}//getNumberOf
+}//State
