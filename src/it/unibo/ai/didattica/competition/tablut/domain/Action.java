@@ -1,88 +1,87 @@
 package it.unibo.ai.didattica.competition.tablut.domain;
 
+import it.unibo.ai.didattica.competition.tablut.util.MyVector;
+
 import java.io.IOException;
 import java.io.Serializable;
 import java.security.InvalidParameterException;
 
 /**
  * this class represents an action of a player
- * 
- * @author A.Piretti
- * 
  */
 public class Action implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 
-	private String from;
-	private String to;
+	private MyVector from;
+	private MyVector to;
 
-	private State.Turn turn;
+	private char turn;
 
-	public Action(String from, String to, StateTablut.Turn t) throws IOException {
-		if (from.length() != 2 || to.length() != 2) {
-			throw new InvalidParameterException("the FROM and the TO string must have length=2");
+	public Action(int xFrom, int yFrom, int xTo, int yTo, char turn) throws IOException {
+		if (xFrom < 0 || xFrom > 8 || xTo < 0 || xTo > 8 ||
+				yFrom < 0 || yFrom > 8 || yTo < 0 || yTo > 8 || (xFrom==xTo && yFrom == yTo) ){
+			throw new InvalidParameterException("Invalid action");
 		} else {
-			this.from = from;
-			this.to = to;
-			this.turn = t;
+			from = new MyVector(xFrom, yFrom);
+			to = new MyVector(xTo, yTo);
+			this.turn = turn;
 		}
 	}
 
-	public String getFrom() {
-		return this.from;
-	}
+	public MyVector getFrom() {
+		return from;
+	} //DEEP?
 
-	public void setFrom(String from) {
-		this.from = from;
-	}
+	public void setFrom(MyVector from) {
+		this.from = new MyVector(from.x, from.y);
+	}//setFrom
 
-	public String getTo() {
+	public MyVector getTo() {
 		return to;
-	}
+	} //DEEP?
 
-	public void setTo(String to) {
-		this.to = to;
-	}
+	public void setTo(MyVector to) {
+		this.to = new MyVector(to.x, to.y);
+	}//setTo
 
-	public StateTablut.Turn getTurn() {
+	public char getTurn() {
 		return turn;
 	}
 
-	public void setTurn(StateTablut.Turn turn) {
+	public void setTurn(char turn) {
 		this.turn = turn;
 	}
 
 	public String toString() {
-		return "Turn: " + this.turn + " " + "Pawn from " + from + " to " + to;
+		return "Turn: " + turn + " " + "Pawn from " + from + " to " + to;
 	}
 
 	/**
 	 * @return means the index of the column where the pawn is moved from
 	 */
 	public int getColumnFrom() {
-		return Character.toLowerCase(this.from.charAt(0)) - 97;
+		return from.y;
 	}
 
 	/**
 	 * @return means the index of the column where the pawn is moved to
 	 */
 	public int getColumnTo() {
-		return Character.toLowerCase(this.to.charAt(0)) - 97;
+		return to.y;
 	}
 
 	/**
 	 * @return means the index of the row where the pawn is moved from
 	 */
 	public int getRowFrom() {
-		return Integer.parseInt(this.from.charAt(1) + "") - 1;
+		return from.x;
 	}
 
 	/**
 	 * @return means the index of the row where the pawn is moved to
 	 */
 	public int getRowTo() {
-		return Integer.parseInt(this.to.charAt(1) + "") - 1;
+		return to.x;
 	}
-
-}
+}//Action

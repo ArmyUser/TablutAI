@@ -15,7 +15,6 @@ import it.unibo.ai.didattica.competition.tablut.exceptions.ThroneException;
 
 /**
  * Contains the rules of the game
- *
  */
 public interface Game {
 
@@ -47,9 +46,9 @@ public interface Game {
 	 * @throws ClimbingCitadelException
 	 * @throws CitadelException
 	 */
-	public State checkMove(State state, Action a)
+	State checkMove(State state, Action a)
 			throws BoardException, ActionException, StopException, PawnException, DiagonalException, ClimbingException,
 			ThroneException, OccupitedException, ClimbingCitadelException, CitadelException;
 
-	public void endGame(State state);
+	void endGame(State state);
 }
