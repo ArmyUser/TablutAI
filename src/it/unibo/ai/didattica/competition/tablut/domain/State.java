@@ -14,18 +14,18 @@ public abstract class State {
 	 * Turn represent the player that has to move or the end of the game(A win
 	 * by a player or a draw)
 	 */
-	private final char WW = '1';
-	private final char BW = '0';
-	private final char D = 'D';
+	public static final char WW = '1';
+	public static final char BW = '0';
+	public static final char D = 'D';
 
 	/**
 	 * Pawn represents the content of a box in the board
 	 */
-	private final char W = 'W';
-	private final char B = 'W';
-	private final char E = 'E';
-	private final char T = 'T';
-	private final char K = 'K';
+	public static final char W = 'W';
+	public static final char B = 'W';
+	public static final char E = 'E';
+	public static final char T = 'T';
+	public static final char K = 'K';
 
 
 	protected char board[][];
