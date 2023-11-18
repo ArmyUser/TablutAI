@@ -19,7 +19,7 @@ public class Action implements Serializable {
 	private char turn;
 
 	public Action(int xFrom, int yFrom, int xTo, int yTo, char turn) throws IOException {
-		if (xFrom < 0 || xFrom > 8 || xTo < 0 || xTo > 8 ||
+		/*if (xFrom < 0 || xFrom > 8 || xTo < 0 || xTo > 8 ||
 				yFrom < 0 || yFrom > 8 || yTo < 0 || yTo > 8 || (xFrom==xTo && yFrom == yTo) ){
 			throw new InvalidParameterException("Invalid action");
 		} else {
@@ -27,6 +27,10 @@ public class Action implements Serializable {
 			to = new MyVector(xTo, yTo);
 			this.turn = turn;
 		}
+		*/
+		from = new MyVector(xFrom, yFrom);
+		to = new MyVector(xTo, yTo);
+		this.turn = turn;
 	}
 
 	public MyVector getFrom() {
