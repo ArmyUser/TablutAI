@@ -11,19 +11,15 @@ import com.google.gson.Gson;
 
 import it.unibo.ai.didattica.competition.tablut.domain.Action;
 import it.unibo.ai.didattica.competition.tablut.domain.State;
-import it.unibo.ai.didattica.competition.tablut.domain.StateTablut;
 import it.unibo.ai.didattica.competition.tablut.util.Configuration;
 import it.unibo.ai.didattica.competition.tablut.util.StreamUtils;
 
 /**
  * Classe astratta di un client per il gioco Tablut
- * 
- * @author Andrea Piretti
- *
  */
 public abstract class TablutClient implements Runnable {
 
-	private State.Turn player;
+	private char player;
 	private String name;
 	private Socket playerSocket;
 	private DataInputStream in;
@@ -33,11 +29,11 @@ public abstract class TablutClient implements Runnable {
 	private int timeout;
 	private String serverIp;
 
-	public State.Turn getPlayer() {
+	public char getPlayer() {
 		return player;
 	}
 
-	public void setPlayer(State.Turn player) {
+	public void setPlayer(char player) {
 		this.player = player;
 	}
 
@@ -65,15 +61,15 @@ public abstract class TablutClient implements Runnable {
 	 */
 	public TablutClient(String player, String name, int timeout, String ipAddress)
 			throws UnknownHostException, IOException {
-		int port = 0;
+		int port;
 		serverIp = ipAddress;
 		this.timeout = timeout;
 		this.gson = new Gson();
 		if (player.toLowerCase().equals("white")) {
-			this.player = State.Turn.WHITE;
+			this.player = State.W;
 			port = Configuration.whitePort;
 		} else if (player.toLowerCase().equals("black")) {
-			this.player = State.Turn.BLACK;
+			this.player = State.B;
 			port = Configuration.blackPort;
 		} else {
 			throw new InvalidParameterException("Player role must be BLACK or WHITE");

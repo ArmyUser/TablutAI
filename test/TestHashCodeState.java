@@ -4,8 +4,6 @@ import java.util.Arrays;
 
 import org.junit.jupiter.api.Test;
 
-import it.unibo.ai.didattica.competition.tablut.domain.StateTablut;
-
 class TestHashCodeState {
 
 	@Test
