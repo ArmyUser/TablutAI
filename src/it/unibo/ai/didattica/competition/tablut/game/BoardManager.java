@@ -180,14 +180,17 @@ public class BoardManager
         removePawn(from.x, from.y);
         board[to.x][to.y] = player;
 
+        //if the currentPlayer is Black, it has to check if it's near the King
         char opposite = W;
         if( player == B )
             if( captureKing(to) ) return;
         else opposite = B;
 
+        //in any case, do the capture
         capture(to,player,opposite);
     }//setPawn
 
+    //check any direction
     private boolean capture(MyVector to, char currentPlayer, char opposite){
         boolean captured = false;
 
@@ -242,6 +245,10 @@ public class BoardManager
         return captured;
     }//capture
 
+    //check in any direction if the Black can capture the King. This happens in the following situations:
+    //- the King is on the Throne and it is surrounded by 4 Black pawns
+    //- the King is adjacent to the Throne and it is surrounded by other 3 Black pawns
+    //- the King is adjacent to citadel (the Black's camps) and it is surrounded by other 3 pawns
     private boolean captureKing(MyVector to){
         //Top king
         if( to.x > 1 ){
@@ -306,6 +313,22 @@ public class BoardManager
         return false;
     }//captureKing
 
+    public boolean captureKingOnThrone() {
+         if( board[4][3] == B && board[3][4] == B && board[5][4] == B && board[4][6] == B)
+            return true;
+        else return false;
+    }//captureKingOnThrone ;)
+
+    public boolean captureKingAdjacent() {
+        if()
+            return true;
+        else return false;
+    }//captureKingAdjacent
+    
+    public boolean isAdjacentToThrone(int x, int y) {
+        if( board[x][y] == T ) return true;
+        else return false;
+    }//isAdjacentToThrone
 
     @Override
     public int hashCode() {
