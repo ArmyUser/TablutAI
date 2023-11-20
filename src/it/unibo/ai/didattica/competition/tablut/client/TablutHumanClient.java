@@ -6,13 +6,8 @@ import java.io.InputStreamReader;
 import java.net.UnknownHostException;
 
 import it.unibo.ai.didattica.competition.tablut.domain.Action;
-import it.unibo.ai.didattica.competition.tablut.domain.State.Turn;
 
-/**
- * 
- * @author A. Piretti, Andrea Galassi
- *
- */
+/*
 public class TablutHumanClient extends TablutClient {
 
 	public TablutHumanClient(String player) throws UnknownHostException, IOException {
@@ -114,5 +109,6 @@ public class TablutHumanClient extends TablutClient {
 			}
 		}
 	}
-
 }
+
+ */

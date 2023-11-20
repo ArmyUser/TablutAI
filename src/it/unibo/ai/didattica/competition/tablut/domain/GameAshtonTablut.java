@@ -1,5 +1,6 @@
 package it.unibo.ai.didattica.competition.tablut.domain;
 
+/*
 import java.io.File;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -12,24 +13,23 @@ import java.util.logging.Logger;
 import java.util.logging.SimpleFormatter;
 
 import it.unibo.ai.didattica.competition.tablut.exceptions.*;
+*/
 
 /**
  * Game engine inspired by the Ashton Rules of Tablut
  */
+/*
 public class GameAshtonTablut implements Game {
 
-	/**
-	 * Number of repeated states that can occur before a draw
-	 */
+
+	//Number of repeated states that can occur before a draw
 	private int repeated_moves_allowed;
 
-	/**
-	 * Number of states kept in memory. negative value means infinite.
-	 */
+
+	//Number of states kept in memory. negative value means infinite.
 	private int cache_size;
-	/**
-	 * Counter for the moves without capturing that have occurred
-	 */
+
+	 //Counter for the moves without capturing that have occurred
 	private int movesWithutCapturing;
 	private String gameLogName;
 	private File gameLog;
@@ -741,3 +741,4 @@ public class GameAshtonTablut implements Game {
 		this.loggGame.fine("Stato:\n"+state.toString());
 	}
 }//GameAshtonTablut
+*/

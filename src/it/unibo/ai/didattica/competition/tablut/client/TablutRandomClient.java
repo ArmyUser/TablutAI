@@ -7,13 +7,8 @@ import java.util.List;
 import java.util.Random;
 
 import it.unibo.ai.didattica.competition.tablut.domain.*;
-import it.unibo.ai.didattica.competition.tablut.domain.State.Turn;
 
-/**
- * 
- * @author A. Piretti, Andrea Galassi
- *
- */
+/*
 public class TablutRandomClient extends TablutClient {
 
 	private int game;
@@ -296,3 +291,4 @@ public class TablutRandomClient extends TablutClient {
 
 	}
 }
+ */

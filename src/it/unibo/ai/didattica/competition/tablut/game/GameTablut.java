@@ -24,7 +24,7 @@ public class GameTablut extends Game{
     }//result
 
     @Override
-    public float utility(StateTablut state, BoardManager.Player to_move) {
+    public float utility(GameState state, char to_move) {
         return 0;
     }
 
@@ -42,17 +42,17 @@ public class GameTablut extends Game{
     }//computeUtility
 
     @Override
-    public boolean terminalTest(StateTablut state) {
+    public boolean terminalTest(GameState state) {
         return false;
     }
 
     @Override
-    public BoardManager.Player toMove(StateTablut state) {
-        return null;
+    public char toMove(GameState state) {
+        return '.';
     }
 
     @Override
-    public float eval(StateTablut state) {
+    public float eval(GameState state) {
         return 0;
     }
 }//GameTablut

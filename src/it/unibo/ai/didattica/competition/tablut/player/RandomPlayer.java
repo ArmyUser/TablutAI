@@ -1,11 +1,13 @@
 package it.unibo.ai.didattica.competition.tablut.player;
 
+import it.unibo.ai.didattica.competition.tablut.domain.GameState;
 import it.unibo.ai.didattica.competition.tablut.game.Game;
 import it.unibo.ai.didattica.competition.tablut.util.MyVector;
 
 import java.util.LinkedList;
 import java.util.Random;
 
+/*
 public class RandomPlayer extends HumanPlayer {
     private Game game;
     private Random rand;
@@ -16,7 +18,7 @@ public class RandomPlayer extends HumanPlayer {
     }
 
     @Override
-    public MyVector getNextAction(StateTablut state) {
+    public MyVector getNextAction(GameState state) {
         LinkedList<MyVector> actions = game.actions(state);
         if( !actions.isEmpty() ){
             return actions.get(rand.nextInt(actions.size()));
@@ -24,3 +26,4 @@ public class RandomPlayer extends HumanPlayer {
         return null;
     }//getNextAction
 }//RandomPlayer
+*/

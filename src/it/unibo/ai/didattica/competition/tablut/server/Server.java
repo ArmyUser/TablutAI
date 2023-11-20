@@ -12,7 +12,6 @@ import java.util.Date;
 import java.util.logging.*;
 
 import it.unibo.ai.didattica.competition.tablut.domain.*;
-import it.unibo.ai.didattica.competition.tablut.domain.State.Turn;
 import it.unibo.ai.didattica.competition.tablut.gui.Gui;
 import it.unibo.ai.didattica.competition.tablut.util.Configuration;
 import it.unibo.ai.didattica.competition.tablut.util.StreamUtils;
@@ -23,49 +22,34 @@ import org.apache.commons.cli.*;
 /**
  * this class represent the server of the match: 2 clients with TCP connection
  * can connect and start to play
- * 
- * @author A.Piretti, Andrea Galassi
- *
  */
 public class Server implements Runnable {
-	
-	/**
-	 * Timeout for waiting for a client to connect
-	 */
+
+	//Timeout for waiting for a client to connect
 	public static int connectionTimeout = 300;
 
-	/**
-	 * State of the game
-	 */
+	//State of the game
 	private State state;
-	/**
-	 * Number of seconds allowed for a decision
-	 */
+
+	//Number of seconds allowed for a decision
 	private int time;
-	/**
-	 * Number of states kept in memory for the detection of a draw
-	 */
+
+	//Number of states kept in memory for the detection of a draw
 	private int moveCache;
-	/**
-	 * Whether the gui must be enabled or not
-	 */
+
+	//Whether the gui must be enabled or not
 	protected boolean enableGui;
 
-	/**
-	 * JSON string used to communicate
-	 */
+	//JSON string used to communicate
 	private String theGson;
-	/**
-	 * Action chosen by a player
-	 */
+
+	//Action chosen by a player
 	private Action move;
-	/**
-	 * Errors allowed
-	 */
+
+	//Errors allowed
 	private int errors;
-	/**
-	 * Repeated positions allowed
-	 */
+
+	//Repeated positions allowed
 	private int repeated;
 
 	private ServerSocket socketWhite;
@@ -74,13 +58,11 @@ public class Server implements Runnable {
 	private Socket white;
 	private Socket black;
 
-	/**
-	 * Counter for the errors of the black player
-	 */
+
+	//Counter for the errors of the black player
 	private int blackErrors;
-	/**
-	 * Counter for the errors of the white player
-	 */
+
+	//Counter for the errors of the white player
 	private int whiteErrors;
 
 	private int cacheSize;
@@ -88,9 +70,8 @@ public class Server implements Runnable {
 	private Game game;
 	private Gson gson;
 	protected Gui theGui;
-	/**
-	 * Integer that represents the game type
-	 */
+
+	//Integer that represents the game type
 	protected int gameC;
 
 	public Server(int timeout, int cacheSize, int numErrors, int repeated, int game, boolean gui) {
@@ -238,9 +219,6 @@ public class Server implements Runnable {
 	/**
 	 * This class represents the stream who is waiting for the move from the
 	 * client (JSON format)
-	 * 
-	 * @author A.Piretti
-	 *
 	 */
 	private class TCPInput implements Runnable {
 		private DataInputStream theStream;

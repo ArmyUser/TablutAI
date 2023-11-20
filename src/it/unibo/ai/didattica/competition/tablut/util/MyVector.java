@@ -23,4 +23,8 @@ public class MyVector {
         return x == myVector.x && y == myVector.y;
     }//equals
 
+    @Override
+    public int hashCode(){
+        return (x*43+y*43)*71;
+    }//hashCode
 }//MyVector

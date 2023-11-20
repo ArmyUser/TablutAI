@@ -20,7 +20,7 @@ public class BoardManager
      * Pawn represents the content of a box in the board
      */
     public static final char W = 'W';
-    public static final char B = 'W';
+    public static final char B = 'B';
     public static final char E = 'E';
     public static final char T = 'T';
     public static final char K = 'K';
@@ -180,17 +180,22 @@ public class BoardManager
         removePawn(from.x, from.y);
         board[to.x][to.y] = player;
 
-        //if the currentPlayer is Black, it has to check if it's near the King
         char opposite = W;
-        if( player == B )
-            if( captureKing(to) ) return;
+        if( player == B ){
+            if( captureKing(to) ){
+                System.out.println("The king is dead!");
+                return;
+            }
+            else{
+                System.out.println("King not captured");
+                System.out.println(toString());
+            }
+        }
         else opposite = B;
 
-        //in any case, do the capture
         capture(to,player,opposite);
     }//setPawn
 
-    //check any direction
     private boolean capture(MyVector to, char currentPlayer, char opposite){
         boolean captured = false;
 
@@ -245,10 +250,6 @@ public class BoardManager
         return captured;
     }//capture
 
-    //check in any direction if the Black can capture the King. This happens in the following situations:
-    //- the King is on the Throne and it is surrounded by 4 Black pawns
-    //- the King is adjacent to the Throne and it is surrounded by other 3 Black pawns
-    //- the King is adjacent to citadel (the Black's camps) and it is surrounded by other 3 pawns
     private boolean captureKing(MyVector to){
         //Top king
         if( to.x > 1 ){
@@ -257,7 +258,7 @@ public class BoardManager
                     if (captureKingOnThrone()) return true;
                 }
                 else if( isAdjacentToThrone(to.x-1, to.y) ) {
-                    if (captureKingAdjacent()) return true;
+                    if (captureKingAdjacent(to.x-1,to.y)) return true;
                 }
                 else {
                     if (capture(to, B, K)) return true;
@@ -272,7 +273,7 @@ public class BoardManager
                     if (captureKingOnThrone()) return true;
                 }
                 else if (isAdjacentToThrone(to.x + 1, to.y)) {
-                    if (captureKingAdjacent()) return true;
+                    if (captureKingAdjacent(to.x-1,to.y)) return true;
                 }
                 else {
                     if (capture(to, B, K)) return true;
@@ -287,7 +288,7 @@ public class BoardManager
                     if (captureKingOnThrone()) return true;
                 }
                 else if( isAdjacentToThrone(to.x, to.y+1) ) {
-                    if (captureKingAdjacent()) return true;
+                    if (captureKingAdjacent(to.x-1,to.y)) return true;
                 }
                 else {
                     if (capture(to, B, K)) return true;
@@ -302,7 +303,7 @@ public class BoardManager
                     if (captureKingOnThrone()) return true;
                 }
                 else if( isAdjacentToThrone(to.x, to.y-1) ) {
-                    if (captureKingAdjacent()) return true;
+                    if (captureKingAdjacent(to.x, to.y-1)) return true;
                 }
                 else {
                     if (capture(to, B, K)) return true;
@@ -313,22 +314,31 @@ public class BoardManager
         return false;
     }//captureKing
 
-    public boolean captureKingOnThrone() {
-         if( board[4][3] == B && board[3][4] == B && board[5][4] == B && board[4][6] == B)
-            return true;
-        else return false;
-    }//captureKingOnThrone ;)
+    private boolean captureKingOnThrone(){
+        return board[3][4] == B && board[5][4] == B && board[4][3] == B && board[4][5] == B;
+    }//captureKingOnThrone
 
-    public boolean captureKingAdjacent() {
-        if()
-            return true;
-        else return false;
-    }//captureKingAdjacent
-    
-    public boolean isAdjacentToThrone(int x, int y) {
-        if( board[x][y] == T ) return true;
-        else return false;
+    private boolean isAdjacentToThrone(int x, int y){
+        return (Math.abs(x-4) == 1 && y == 4) || (Math.abs(y-4) == 1 && x == 4);
     }//isAdjacentToThrone
+
+    private boolean captureKingAdjacent(int x, int y){
+        //Black pawn above and below the king
+        if( board[x-1][y] == B && board[x+1][y] == B ){
+            //Black pawn on the right of the king
+            if( board[x][y+1] == B ) return true;
+            //Black pawn on the left of the king
+            if( board[x][y-1] == B ) return true;
+        }
+        //Black pawn to the left and to the right of the king
+        if( board[x][y-1] == B && board[x][y+1] == B ){
+            //Black pawn above the king
+            if( board[x-1][y] == B ) return true;
+            //Black pawn below the king
+            if( board[x+1][y] == B ) return true;
+        }
+        return false;
+    }//captureKingAdjacent
 
     @Override
     public int hashCode() {

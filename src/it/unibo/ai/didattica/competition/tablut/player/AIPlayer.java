@@ -1,9 +1,6 @@
 package it.unibo.ai.didattica.competition.tablut.player;
 
-import is.algorithms.AbstractAlgorithms;
-import is.game.GameState;
-import is.utils.MyVector;
-
+/*
 public abstract class AIPlayer implements Player{
     private final AbstractAlgorithms algorithm;
 
@@ -19,3 +16,4 @@ public abstract class AIPlayer implements Player{
         return move;
     }//getNextAction
 }//Player
+*/

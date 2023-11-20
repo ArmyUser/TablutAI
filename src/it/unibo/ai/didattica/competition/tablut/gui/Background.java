@@ -5,13 +5,9 @@ import java.awt.Image;
 
 import javax.swing.*;
 
-import it.unibo.ai.didattica.competition.tablut.domain.State;
-
+/*
 public abstract class Background extends JPanel {
-	
-	/**
-	 * 
-	 */
+
 	private static final long serialVersionUID = 1L;
 	
 	protected Image background;
@@ -65,3 +61,4 @@ public abstract class Background extends JPanel {
 	}
 
 }
+*/
