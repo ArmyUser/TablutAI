@@ -1,7 +1,10 @@
 package it.unibo.ai.didattica.competition.tablut.game;
 
 import it.unibo.ai.didattica.competition.tablut.command.ActionCommand;
+import it.unibo.ai.didattica.competition.tablut.command.HistoryCommandHandler;
 import it.unibo.ai.didattica.competition.tablut.domain.GameState;
+import it.unibo.ai.didattica.competition.tablut.player.AlphaBetaPlayer;
+import it.unibo.ai.didattica.competition.tablut.player.Player;
 import it.unibo.ai.didattica.competition.tablut.util.MyVector;
 
 import java.util.HashMap;
@@ -9,18 +12,29 @@ import java.util.LinkedList;
 
 public class GameTablut extends Game{
 
+    int i = 0;
+
+    public GameTablut(GameState initial){
+        this.initial = initial;
+        this.histCmdHandler = new HistoryCommandHandler();
+    }
+
     @Override
-    public HashMap<MyVector,LinkedList<MyVector>> actions(GameState state) {
-        return BoardManager.getInstance().getPossibleMoves(state);
+    public HashMap<MyVector,LinkedList<MyVector>> actions(char player) {
+        return BoardManager.getInstance().getPossibleMoves(player);
     }//actions
 
     @Override
     public GameState result(GameState state, MyVector from, MyVector to) {
         char currentPlayer = state.getPlayer();
+        System.out.println("From: "+from);
+        System.out.println("To: "+to);
         histCmdHandler.handle(new ActionCommand(from,to,currentPlayer));
+        display();
 
         char nextPlayer = currentPlayer == BoardManager.B ? BoardManager.W : BoardManager.B;
-        return new GameState(nextPlayer,computeUtility(currentPlayer));
+        //System.out.println("Current: "+currentPlayer+"\nNext: "+nextPlayer);
+        return new GameState(nextPlayer,computeUtility(currentPlayer), actions(nextPlayer));
     }//result
 
     @Override
@@ -43,16 +57,36 @@ public class GameTablut extends Game{
 
     @Override
     public boolean terminalTest(GameState state) {
-        return false;
+        if( computeUtility(state.getPlayer()) != 0) {
+            System.out.println("**********-----------------------------**********");
+            System.out.println("**********-----------------------------**********");
+            System.out.println("**********-----------------------------**********");
+            System.out.println("**********-----------------------------**********");
+            System.out.println("**********-----------------------------**********");
+            System.out.println("**********-----------------------------**********");
+            System.out.println("**********-----------------------------**********");
+            System.out.println("**********-----------------------------**********");
+            System.out.println("**********-----------------------------**********");
+            System.out.println("**********-----------------------------**********");
+            System.out.println("**********-----------------------------**********");
+        }
+        return computeUtility(state.getPlayer()) != 0;
     }
 
     @Override
     public char toMove(GameState state) {
-        return '.';
+        return state.getPlayer();
     }
 
     @Override
     public float eval(GameState state) {
         return 0;
     }
+
+    public static void main(String[] args) {
+        GameTablut tablut = new GameTablut(new GameState(BoardManager.W,0,BoardManager.getInstance().getPossibleMoves(BoardManager.W)));
+        Player p1 = new AlphaBetaPlayer(tablut, tablut.histCmdHandler);
+        Player p2 = new AlphaBetaPlayer(tablut, tablut.histCmdHandler);
+        tablut.play(p1,p2);
+    }//main
 }//GameTablut

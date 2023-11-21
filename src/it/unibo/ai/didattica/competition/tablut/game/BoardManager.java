@@ -3,10 +3,7 @@ package it.unibo.ai.didattica.competition.tablut.game;
 import it.unibo.ai.didattica.competition.tablut.domain.GameState;
 import it.unibo.ai.didattica.competition.tablut.util.MyVector;
 
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedList;
+import java.util.*;
 
 public class BoardManager
 {
@@ -27,6 +24,9 @@ public class BoardManager
 
     private HashSet<MyVector> citadels;
     private HashSet<MyVector> escapes;
+
+    private boolean isKingCaptured = false;
+    private boolean isKingEscaped = false;
 
     private BoardManager(){
         board = new char[9][9];
@@ -119,7 +119,8 @@ public class BoardManager
         StringBuilder result = new StringBuilder();
         for (int i = 0; i < board.length; i++) {
             for (int j = 0; j < board.length; j++) {
-                result.append(board[i][j]);
+                if( board[i][j] == E ) result.append('.');
+                else result.append(board[i][j]);
                 if (j == 8) result.append("\n");
 
             }
@@ -176,28 +177,44 @@ public class BoardManager
         this.turn = turn;
     }//setTurn
 
-    public void setPawn(MyVector from, MyVector to, char player){
+    public LinkedList<MyVector> setPawn(MyVector from, MyVector to, char player){
+        if( board[from.x][from.y] == K ) player = K;
         removePawn(from.x, from.y);
         board[to.x][to.y] = player;
 
         char opposite = W;
         if( player == B ){
-            if( captureKing(to) ){
-                System.out.println("The king is dead!");
-                return;
-            }
-            else{
-                System.out.println("King not captured");
-                System.out.println(toString());
+            LinkedList<MyVector> kingPos = captureKing(to);
+            if( kingPos.size() > 0 ){
+                isKingCaptured = true;
+                return kingPos;
             }
         }
         else opposite = B;
 
-        capture(to,player,opposite);
+        return capture(to,player,opposite);
     }//setPawn
 
-    private boolean capture(MyVector to, char currentPlayer, char opposite){
-        boolean captured = false;
+    public void resetPawn(MyVector from, MyVector to, char player){
+        if( isKingEscaped ) {
+            isKingEscaped = false;
+            player = K;
+        }
+        removePawn(from.x, from.y);
+        board[to.x][to.y] = player;
+    }//resetPawn
+
+    public void respawnPawn(MyVector position, char color){
+        if( color == K ){
+            isKingEscaped = false;
+            isKingCaptured = false;
+        }
+        if( position != null )
+            board[position.x][position.y] = color;
+    }//respawnPawn
+
+    private LinkedList<MyVector> capture(MyVector to, char currentPlayer, char opposite){
+        LinkedList<MyVector> captured = new LinkedList<>();
 
         //top capture
         if( to.x > 1 ){
@@ -205,8 +222,8 @@ public class BoardManager
                 //Captured by 2 allies or by one allies and one citadel (empty throne included)
                 if( board[to.x-2][to.y] == currentPlayer ||
                         (citadels.contains(new MyVector(to.x-2,to.y)) && (board[to.x-2][to.y] != K ) ) ){
-                    removePawn(to.x+1,to.y);
-                    captured = true;
+                    removePawn(to.x-1,to.y);
+                    captured.add(new MyVector(to.x-1,to.y));
                 }
             }
         }
@@ -218,7 +235,7 @@ public class BoardManager
                 if( board[to.x+2][to.y] == currentPlayer ||
                         (citadels.contains(new MyVector(to.x+2,to.y)) && (board[to.x+2][to.y] != K ) ) ){
                     removePawn(to.x+1,to.y);
-                    captured = true;
+                    captured.add(new MyVector(to.x+1,to.y));
                 }
             }
         }
@@ -230,7 +247,7 @@ public class BoardManager
                 if( board[to.x][to.y+2] == currentPlayer ||
                         (citadels.contains(new MyVector(to.x,to.y+2)) && (board[to.x][to.y+2] != K ) ) ){
                     removePawn(to.x,to.y+1);
-                    captured = true;
+                    captured.add(new MyVector(to.x,to.y+1));
                 }
             }
         }
@@ -242,7 +259,7 @@ public class BoardManager
                 if( board[to.x][to.y-2] == currentPlayer ||
                         (citadels.contains(new MyVector(to.x,to.y-2)) && (board[to.x][to.y-2] != K ) ) ){
                     removePawn(to.x,to.y-1);
-                    captured = true;
+                    captured.add(new MyVector(to.x,to.y-1));
                 }
             }
         }
@@ -250,18 +267,20 @@ public class BoardManager
         return captured;
     }//capture
 
-    private boolean captureKing(MyVector to){
+    private LinkedList<MyVector> captureKing(MyVector to){
+        LinkedList<MyVector> kingPos = new LinkedList<>();
         //Top king
         if( to.x > 1 ){
             if( board[to.x-1][to.y] == K ){
+                kingPos.add(new MyVector(to.x-1,to.y));
                 if( board[4][4] == K ) {
-                    if (captureKingOnThrone()) return true;
+                    if (captureKingOnThrone()) return kingPos;
                 }
                 else if( isAdjacentToThrone(to.x-1, to.y) ) {
-                    if (captureKingAdjacent(to.x-1,to.y)) return true;
+                    if (captureKingAdjacent(to.x-1,to.y)) return kingPos;
                 }
                 else {
-                    if (capture(to, B, K)) return true;
+                    if ( capture(to, B, K).size() > 0 ) return kingPos;
                 }
             }
         }
@@ -269,14 +288,15 @@ public class BoardManager
         //Bottom king
         if( to.x < 7 ){
             if( board[to.x+1][to.y] == K ){
+                kingPos.add(new MyVector(to.x+1,to.y));
                 if( board[4][4] == K ) {
-                    if (captureKingOnThrone()) return true;
+                    if (captureKingOnThrone()) return kingPos;
                 }
                 else if (isAdjacentToThrone(to.x + 1, to.y)) {
-                    if (captureKingAdjacent(to.x-1,to.y)) return true;
+                    if (captureKingAdjacent(to.x+1,to.y)) return kingPos;
                 }
                 else {
-                    if (capture(to, B, K)) return true;
+                    if (capture(to, B, K).size() > 0) return kingPos;
                 }
             }
         }
@@ -284,14 +304,15 @@ public class BoardManager
         //Right king
         if( to.y < 7 ){
             if( board[to.x][to.y+1] == K ){
+                kingPos.add(new MyVector(to.x,to.y+1));
                 if( board[4][4] == K ) {
-                    if (captureKingOnThrone()) return true;
+                    if (captureKingOnThrone()) return kingPos;
                 }
                 else if( isAdjacentToThrone(to.x, to.y+1) ) {
-                    if (captureKingAdjacent(to.x-1,to.y)) return true;
+                    if (captureKingAdjacent(to.x,to.y+1)) return kingPos;
                 }
                 else {
-                    if (capture(to, B, K)) return true;
+                    if (capture(to, B, K).size() > 0) return kingPos;
                 }
             }
         }
@@ -299,19 +320,21 @@ public class BoardManager
         //Left king
         if( to.y > 1 ){
             if( board[to.x][to.y-1] == K ){
+                kingPos.add(new MyVector(to.x,to.y-1));
                 if( board[4][4] == K ) {
-                    if (captureKingOnThrone()) return true;
+                    if (captureKingOnThrone()) return kingPos;
                 }
                 else if( isAdjacentToThrone(to.x, to.y-1) ) {
-                    if (captureKingAdjacent(to.x, to.y-1)) return true;
+                    if (captureKingAdjacent(to.x, to.y-1)) return kingPos;
                 }
                 else {
-                    if (capture(to, B, K)) return true;
+                    if (capture(to, B, K).size() > 0) return kingPos;
                 }
             }
         }
 
-        return false;
+        kingPos.clear();
+        return kingPos;
     }//captureKing
 
     private boolean captureKingOnThrone(){
@@ -423,21 +446,27 @@ public class BoardManager
         return count;
     }//getNumberOf
 
-    public HashMap<MyVector,LinkedList<MyVector>> getPossibleMoves(GameState state) {
+    public HashMap<MyVector,LinkedList<MyVector>> getPossibleMoves(char currentPlayer) {
         HashMap<MyVector,LinkedList<MyVector>> res = new HashMap<>(); //Format: from position -> list of allowed positions
         MyVector thisPos;
+
+        char eventualKing = '.';
+        if( currentPlayer == W ) eventualKing = K;
+
+        //TOREMOVE
+        Random rand = new Random();
 
         for( int i=0; i< board.length; i++){
             for( int j=0; j< board.length; j++){
                 //If it is the turn of the current player, then
-                if( board[i][j] == state.getPlayer() ){
+                if( board[i][j] == currentPlayer || board[i][j] == eventualKing ){
                     LinkedList<MyVector> moves = new LinkedList<>();
                     res.put(new MyVector(i,j),moves);
 
                     //Right side moves
                     int k = j+1;
                     thisPos = new MyVector(i,k);
-                    while( k < board.length && board[i][k] == E && citadels.contains(thisPos) ){
+                    while( k < board.length && board[i][k] == E && !citadels.contains(thisPos) ){
                         moves.add(thisPos);
                         k++;
                         thisPos = new MyVector(i,k);
@@ -446,7 +475,7 @@ public class BoardManager
                     //Down side moves
                     k = i+1;
                     thisPos = new MyVector(k,j);
-                    while( k < board.length && board[k][j] == E && citadels.contains(thisPos) ){
+                    while( k < board.length && board[k][j] == E && !citadels.contains(thisPos) ){
                         moves.add(thisPos);
                         k++;
                         thisPos = new MyVector(k,j);
@@ -455,7 +484,7 @@ public class BoardManager
                     //Left side moves
                     k = j-1;
                     thisPos = new MyVector(i,k);
-                    while( k > -1 && board[i][k] == E && citadels.contains(thisPos) ){
+                    while( k > -1 && board[i][k] == E && !citadels.contains(thisPos) ){
                         moves.add(thisPos);
                         k--;
                         thisPos = new MyVector(i,k);
@@ -464,38 +493,48 @@ public class BoardManager
                     //Top side moves
                     k = i-1;
                     thisPos = new MyVector(k,j);
-                    while( k > -1 && board[k][j] == E && citadels.contains(thisPos) ){
+                    while( k > -1 && board[k][j] == E && !citadels.contains(thisPos) ){
                         moves.add(thisPos);
                         k--;
                         thisPos = new MyVector(k,j);
                     }
+
+                    /* TEST PURPOSE
+                    if( moves.size() > 0){
+                        MyVector v = moves.get(rand.nextInt(moves.size()));
+                        moves.clear();
+                        moves.add(v);
+                    }*/
                 }//if
             }//for2
         }//for1
-
         return res;
     }//getPossibleMoves
 
     public boolean kingEscapes() {
-        for( MyVector pos : escapes)
-            if( board[pos.x][pos.y] == K )
+        for( MyVector pos : escapes )
+            if( board[pos.x][pos.y] == K ) {
+                System.out.println("----------------------King escapes-------------------");
+                isKingEscaped = true;
                 return true;
+            }
         return false;
     }//kingReachesJolly
 
     public boolean kingWasCaptured() {
-        for( int i = 0; i<board.length; i++)
-            for( int j = 0; j<board.length; j++)
-                if( board[i][j] == K)
-                    return false;
-        return true;
+        if( isKingCaptured ) System.out.println("----------------------King captured-------------------");
+        return isKingCaptured;
     }//kingWasCaptured
+
+    public boolean kingWasEscaped(){ return isKingEscaped; }
 
     public boolean allPawnsCaptured() {
         for( int i = 0; i<board.length; i++)
             for( int j = 0; j<board.length; j++)
-                if( board[i][j] == B)
+                if( board[i][j] == B) {
                     return false;
+                }
+        System.out.println("----------------------All pawns captured-------------------");
         return true;
     }//allPawnsCaptured
 }//BoardManager

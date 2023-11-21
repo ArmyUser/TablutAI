@@ -4,5 +4,5 @@ import it.unibo.ai.didattica.competition.tablut.domain.GameState;
 import it.unibo.ai.didattica.competition.tablut.util.MyVector;
 
 public interface Player {
-    MyVector getNextAction(GameState state);
+    MyVector[] getNextAction(GameState state);
 }//PlayerIF

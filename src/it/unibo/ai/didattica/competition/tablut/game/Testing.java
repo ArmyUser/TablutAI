@@ -1,5 +1,7 @@
 package it.unibo.ai.didattica.competition.tablut.game;
 
+import it.unibo.ai.didattica.competition.tablut.command.ActionCommand;
+import it.unibo.ai.didattica.competition.tablut.command.HistoryCommandHandler;
 import it.unibo.ai.didattica.competition.tablut.util.MyVector;
 
 public class Testing {
@@ -96,37 +98,6 @@ public class Testing {
         BoardManager.getInstance().setPawn(new MyVector(3,5), new MyVector(4,5),BoardManager.B);
     }//testGeneralKingCapture
 
-    private static void testCitadelCapture(){
-        /*
-        Throne neighborhood configuration:
-            . B . . .
-            T . K C .
-            . . . . .
-
-        The black on the top will move in the cell below
-         */
-
-        //Throne configuration
-        char[][] board = BoardManager.getInstance().getBoard();
-        board[3][4] = BoardManager.E;
-        board[3][5] = BoardManager.B;
-        board[3][6] = BoardManager.E;
-        board[3][7] = BoardManager.E;
-
-        board[4][4] = BoardManager.T;
-        board[4][5] = BoardManager.E;
-        board[4][6] = BoardManager.K;
-        board[4][7] = BoardManager.E; //Only row changed
-
-        board[5][4] = BoardManager.E;
-        board[5][5] = BoardManager.E;
-        board[5][6] = BoardManager.E;
-        board[5][7] = BoardManager.E;
-
-        //Black move
-        BoardManager.getInstance().setPawn(new MyVector(3,5), new MyVector(4,5),BoardManager.B);
-    }//testCitadelCapture
-
     private static void testCitadelKingCapture(){
         /*
         Throne neighborhood configuration:
@@ -158,10 +129,76 @@ public class Testing {
         BoardManager.getInstance().setPawn(new MyVector(3,5), new MyVector(4,5),BoardManager.B);
     }//testCitadelKingCapture
 
+    private static void testDoAndUndo(){
+        /*
+        Throne neighborhood configuration:
+            . B . . .
+            T . W B .
+            . . . . .
+
+        The black on the top will move in the cell below
+         */
+
+        //Throne configuration
+        char[][] board = BoardManager.getInstance().getBoard();
+        board[3][4] = BoardManager.E;
+        board[3][5] = BoardManager.B;
+        board[3][6] = BoardManager.E;
+        board[3][7] = BoardManager.E;
+
+        board[4][4] = BoardManager.T;
+        board[4][5] = BoardManager.E;
+        board[4][6] = BoardManager.W;
+        board[4][7] = BoardManager.B;
+
+        board[5][4] = BoardManager.E;
+        board[5][5] = BoardManager.E;
+        board[5][6] = BoardManager.E;
+        board[5][7] = BoardManager.E;
+
+        //Black move
+        HistoryCommandHandler handler = new HistoryCommandHandler();
+
+        handler.handle(new ActionCommand(new MyVector(3,5), new MyVector(4,5), BoardManager.B));
+        System.out.println(BoardManager.getInstance());
+
+        handler.undo();
+        System.out.println(BoardManager.getInstance());
+    }//testCitadelKingCapture
+
+    private static void testKingEscape(){
+        /*
+        Throne neighborhood configuration:
+            . . . . .
+            E . K . .
+            . . . . .
+
+        The black on the top will move in the cell below
+         */
+
+        //Throne configuration
+        char[][] board = BoardManager.getInstance().getBoard();
+        board[1][1] = BoardManager.E;
+        board[1][2] = BoardManager.K;
+
+        //Black move
+        HistoryCommandHandler handler = new HistoryCommandHandler();
+
+        handler.handle(new ActionCommand(new MyVector(1,2), new MyVector(1,0), BoardManager.W));
+        System.out.println(BoardManager.getInstance());
+
+        handler.undo();
+        System.out.println(BoardManager.getInstance());
+    }//testCitadelKingCapture
+
+
+
     public static void main(String[] args) {
         //testThroneKingCapture(); OK!
         //testAdjacentKingCapture(); OK!
         //testGeneralKingCapture(); OK!
         //testCitadelKingCapture(); OK!
+        //testDoAndUndo();
+        testKingEscape();
     }//main
 }//Testing

@@ -13,7 +13,7 @@ public abstract class Game
     protected GameState initial;
     protected HistoryCommandHandler histCmdHandler;
 
-    public abstract HashMap<MyVector,LinkedList<MyVector>> actions(GameState state);
+    public abstract HashMap<MyVector,LinkedList<MyVector>> actions(char player);
 
     public abstract GameState result(GameState state, MyVector from, MyVector to);
 
@@ -26,10 +26,9 @@ public abstract class Game
     public abstract float eval(GameState state);
 
     public void display(){
-        BoardManager.getInstance().toString();
+        System.out.println(BoardManager.getInstance().toString());
     }//display
 
-    /*
     public float play( Player... players){
         System.out.println("Match started...");
         GameState state = initial;
@@ -39,8 +38,8 @@ public abstract class Game
             for( Player p : players ){
                 System.out.printf("---> Player %s%n",state.getPlayer());
                 display();
-                MyVector move = p.getNextAction(state);
-                state = result(state, move);
+                MyVector[] move = p.getNextAction(state);
+                state = result(state, move[0], move[1]);
                 histCmdHandler.clearHistory();
                 if( terminalTest(state) ){
                     System.out.println("Final board");
@@ -51,5 +50,4 @@ public abstract class Game
             t ++;
         }
     }//play
-     */
 }//is.game.Game
