@@ -23,8 +23,24 @@ public class Heuristics {
         return new MyVector(wCount,bCount);
     }//getNumberOfPawns
 
-    public int getKingHammingDistance(){
-        return 2;
+    public float getDistance(){
+        char[][] board = bm.getBoard();
+        float dist = 0;
+
+        int i = 0;
+        int j = 0;
+        while( i < 8 ){
+            j = 0;
+            while( j < 8 && board[i][j] != BoardManager.K ) j++;
+            if( board[i][j] == BoardManager.K ) break;
+            i++;
+        }
+
+        for( MyVector e : bm.getEscapes() )
+            dist = (float) Math.min(dist, Math.sqrt((e.x - i)^2 + (e.y - j)^2));
+
+
+        return dist;
     }//getKingHammingDistance
 
     public float computeKingSafety(){
@@ -66,4 +82,31 @@ public class Heuristics {
 
         return safety;
     }//computeKingSafety
+
+    public float getBridgeValue(){
+        char[][] board = bm.getBoard();
+        float val = 4;
+
+        if( board[2][3] == BoardManager.B ) val -= 0.25f;
+        if( board[3][2] == BoardManager.B ) val -= 0.25f;
+        if( board[1][2] == BoardManager.B ) val -= 0.25f;
+        if( board[2][1] == BoardManager.B ) val -= 0.25f;
+
+        if( board[1][6] == BoardManager.B ) val -= 0.25f;
+        if( board[2][7] == BoardManager.B ) val -= 0.25f;
+        if( board[2][5] == BoardManager.B ) val -= 0.25f;
+        if( board[3][6] == BoardManager.B ) val -= 0.25f;
+
+        if( board[6][1] == BoardManager.B ) val -= 0.25f;
+        if( board[7][2] == BoardManager.B ) val -= 0.25f;
+        if( board[5][2] == BoardManager.B ) val -= 0.25f;
+        if( board[6][3] == BoardManager.B ) val -= 0.25f;
+
+        if( board[7][6] == BoardManager.B ) val -= 0.25f;
+        if( board[6][7] == BoardManager.B ) val -= 0.25f;
+        if( board[6][5] == BoardManager.B ) val -= 0.25f;
+        if( board[5][6] == BoardManager.B ) val -= 0.25f;
+
+        return val;
+    }//getBridgeConfig
 }//Heuristics

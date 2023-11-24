@@ -185,6 +185,8 @@ public class BoardManager
         this.turn = turn;
     }//setTurn
 
+    public HashSet<MyVector> getEscapes(){ return escapes; }
+
     public LinkedList<MyVector> setPawn(MyVector from, MyVector to, char player){
         if( board[from.x][from.y] == K )
             player = K;

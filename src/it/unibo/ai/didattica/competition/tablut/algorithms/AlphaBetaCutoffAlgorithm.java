@@ -17,9 +17,9 @@ public class AlphaBetaCutoffAlgorithm extends AbstractAlgorithms{
 
     //HYPERPARAMETERS
     private final float WHITE_WEIGHTS = 2;
-    private final float H1_WEIGHT = 100f;
-    private final float H2_WEIGHT = 0f;
-    private final float H3_WEIGHT = 20f;
+    private final float H1_WEIGHT = 50f; //#PAWNS
+    private final float H2_WEIGHT = 10f; //DISTANCE
+    private final float H3_WEIGHT = 50f; //SAFETY
 
     public AlphaBetaCutoffAlgorithm(Game game, HistoryCommandHandler handler, int maxDepth) {
         super(game, handler);
@@ -33,7 +33,7 @@ public class AlphaBetaCutoffAlgorithm extends AbstractAlgorithms{
         float alpha = Integer.MIN_VALUE;
         float beta = Integer.MAX_VALUE;
         MyVector[] bestAction = new MyVector[2];
-        float v;
+        float v = 0;
 
         for(Map.Entry<MyVector, LinkedList<MyVector>> entry : state.getMoves().entrySet() ){
             MyVector from = entry.getKey();
@@ -47,6 +47,8 @@ public class AlphaBetaCutoffAlgorithm extends AbstractAlgorithms{
                 }
             }
         }
+
+        System.out.println(v);
 
         return bestAction;
     }//alphaBetaSearch
@@ -95,17 +97,19 @@ public class AlphaBetaCutoffAlgorithm extends AbstractAlgorithms{
         h1 = wCount / bCount;
 
         //HEURISTIC 2 (HAMMING KING ESCAPE DISTANCE)
-        h2 = heuristics.getKingHammingDistance();
+        h2 = 1;//heuristics.getDistance();
 
         //HEURISTIC 3 (KING SAFETY)
         h3 = heuristics.computeKingSafety();
 
-        float h = H1_WEIGHT*h1 + H2_WEIGHT*h2 + H3_WEIGHT*h3;
+        //ARMANDO'S HEURISTIC
+        float hArmy = heuristics.getBridgeValue();
 
-        System.out.println(h);
+        //if( h2 == 0 ) return Integer.MIN_VALUE;
+        float h = H1_WEIGHT*h1 + H2_WEIGHT/h2 + H3_WEIGHT*h3 + 10*hArmy;
 
-        if( state.getPlayer() == BoardManager.W ) return h;
-        else return -h;
+        if( state.getPlayer() == BoardManager.W ) return -h;
+        else return h;
     }//eval
 
     // we set a fixed depth limit "d" so that CUTOFF-TEST(state, depth) returns true for all depth greater than
