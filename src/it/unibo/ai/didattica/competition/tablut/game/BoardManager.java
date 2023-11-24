@@ -1,6 +1,5 @@
 package it.unibo.ai.didattica.competition.tablut.game;
 
-import it.unibo.ai.didattica.competition.tablut.domain.GameState;
 import it.unibo.ai.didattica.competition.tablut.util.MyVector;
 
 import java.util.*;
@@ -115,12 +114,21 @@ public class BoardManager
         return board;
     }
 
+    public HashSet<MyVector> getCitadels(){ return citadels; }
+
     public String boardString() {
         StringBuilder result = new StringBuilder();
+        result.append(" \t");
+        for(int i=0; i< board.length; i++)
+            result.append(i+" ");
+
+        result.append("\n\n");
+
         for (int i = 0; i < board.length; i++) {
+            result.append(i+"\t");
             for (int j = 0; j < board.length; j++) {
-                if( board[i][j] == E ) result.append('.');
-                else result.append(board[i][j]);
+                if( board[i][j] == E ) result.append("□ ");
+                else result.append(board[i][j]+" ");
                 if (j == 8) result.append("\n");
 
             }
@@ -178,7 +186,8 @@ public class BoardManager
     }//setTurn
 
     public LinkedList<MyVector> setPawn(MyVector from, MyVector to, char player){
-        if( board[from.x][from.y] == K ) player = K;
+        if( board[from.x][from.y] == K )
+            player = K;
         removePawn(from.x, from.y);
         board[to.x][to.y] = player;
 
@@ -190,7 +199,10 @@ public class BoardManager
                 return kingPos;
             }
         }
-        else opposite = B;
+        else{
+            opposite = B;
+            player = W;
+        }
 
         return capture(to,player,opposite);
     }//setPawn
@@ -200,6 +212,12 @@ public class BoardManager
             isKingEscaped = false;
             player = K;
         }
+
+        if( board[from.x][from.y] == K ){
+            player = K;
+        }
+
+        // remove
         removePawn(from.x, from.y);
         board[to.x][to.y] = player;
     }//resetPawn
@@ -218,10 +236,9 @@ public class BoardManager
 
         //top capture
         if( to.x > 1 ){
-            if( board[to.x-1][to.y] == opposite ){
+            if( board[to.x-1][to.y] == opposite && !citadels.contains(new MyVector(to.x-1, to.y))){
                 //Captured by 2 allies or by one allies and one citadel (empty throne included)
-                if( board[to.x-2][to.y] == currentPlayer ||
-                        (citadels.contains(new MyVector(to.x-2,to.y)) && (board[to.x-2][to.y] != K ) ) ){
+                if( board[to.x-2][to.y] == currentPlayer || citadels.contains(new MyVector(to.x-2,to.y)) ){
                     removePawn(to.x-1,to.y);
                     captured.add(new MyVector(to.x-1,to.y));
                 }
@@ -230,10 +247,9 @@ public class BoardManager
 
         //bottom capture
         if( to.x < 7 ){
-            if( board[to.x+1][to.y] == opposite ){
+            if( board[to.x+1][to.y] == opposite && !citadels.contains(new MyVector(to.x+1, to.y))){
                 //Captured by 2 allies or by one allies and one citadel (empty throne included)
-                if( board[to.x+2][to.y] == currentPlayer ||
-                        (citadels.contains(new MyVector(to.x+2,to.y)) && (board[to.x+2][to.y] != K ) ) ){
+                if( board[to.x+2][to.y] == currentPlayer || citadels.contains(new MyVector(to.x+2,to.y)) ) {
                     removePawn(to.x+1,to.y);
                     captured.add(new MyVector(to.x+1,to.y));
                 }
@@ -242,10 +258,9 @@ public class BoardManager
 
         //right capture
         if( to.y < 7 ){
-            if( board[to.x][to.y+1] == opposite ){
+            if( board[to.x][to.y+1] == opposite && !citadels.contains(new MyVector(to.x, to.y+1))){
                 //Captured by 2 allies or by one allies and one citadel (empty throne included)
-                if( board[to.x][to.y+2] == currentPlayer ||
-                        (citadels.contains(new MyVector(to.x,to.y+2)) && (board[to.x][to.y+2] != K ) ) ){
+                if( board[to.x][to.y+2] == currentPlayer || citadels.contains(new MyVector(to.x,to.y+2)) ){
                     removePawn(to.x,to.y+1);
                     captured.add(new MyVector(to.x,to.y+1));
                 }
@@ -256,14 +271,12 @@ public class BoardManager
         if( to.y > 1 ){
             if( board[to.x][to.y-1] == opposite ){
                 //Captured by 2 allies or by one allies and one citadel (empty throne included)
-                if( board[to.x][to.y-2] == currentPlayer ||
-                        (citadels.contains(new MyVector(to.x,to.y-2)) && (board[to.x][to.y-2] != K ) ) ){
+                if( board[to.x][to.y-2] == currentPlayer || citadels.contains(new MyVector(to.x,to.y-2)) ){
                     removePawn(to.x,to.y-1);
                     captured.add(new MyVector(to.x,to.y-1));
                 }
             }
         }
-
         return captured;
     }//capture
 
@@ -333,8 +346,7 @@ public class BoardManager
             }
         }
 
-        kingPos.clear();
-        return kingPos;
+        return new LinkedList<>();
     }//captureKing
 
     private boolean captureKingOnThrone(){
@@ -432,20 +444,6 @@ public class BoardManager
         return true;
     }//equals
 
-    /**
-     * Counts the number of checkers of a specific color on the board. Note: the king is not taken into account for white, it must be checked separately
-     * @param color The color of the checker that will be counted. It is possible also to use EMPTY to count empty cells.
-     * @return The number of cells of the board that contains a checker of that color.
-     */
-    public int getNumberOf(char color) {
-        int count = 0;
-        for (int i = 0; i < board.length; i++)
-            for (int j = 0; j < board[i].length; j++)
-                if (board[i][j] == color)
-                    count++;
-        return count;
-    }//getNumberOf
-
     public HashMap<MyVector,LinkedList<MyVector>> getPossibleMoves(char currentPlayer) {
         HashMap<MyVector,LinkedList<MyVector>> res = new HashMap<>(); //Format: from position -> list of allowed positions
         MyVector thisPos;
@@ -453,11 +451,8 @@ public class BoardManager
         char eventualKing = '.';
         if( currentPlayer == W ) eventualKing = K;
 
-        //TOREMOVE
-        Random rand = new Random();
-
-        for( int i=0; i< board.length; i++){
-            for( int j=0; j< board.length; j++){
+        for( int i=0; i < board.length; i++){
+            for( int j=0; j < board.length; j++){
                 //If it is the turn of the current player, then
                 if( board[i][j] == currentPlayer || board[i][j] == eventualKing ){
                     LinkedList<MyVector> moves = new LinkedList<>();
@@ -467,7 +462,7 @@ public class BoardManager
                     int k = j+1;
                     thisPos = new MyVector(i,k);
                     while( k < board.length && board[i][k] == E && !citadels.contains(thisPos) ){
-                        moves.add(thisPos);
+                        moves.add(new MyVector(thisPos));
                         k++;
                         thisPos = new MyVector(i,k);
                     }
@@ -476,7 +471,7 @@ public class BoardManager
                     k = i+1;
                     thisPos = new MyVector(k,j);
                     while( k < board.length && board[k][j] == E && !citadels.contains(thisPos) ){
-                        moves.add(thisPos);
+                        moves.add(new MyVector(thisPos));
                         k++;
                         thisPos = new MyVector(k,j);
                     }
@@ -485,7 +480,7 @@ public class BoardManager
                     k = j-1;
                     thisPos = new MyVector(i,k);
                     while( k > -1 && board[i][k] == E && !citadels.contains(thisPos) ){
-                        moves.add(thisPos);
+                        moves.add(new MyVector(thisPos));
                         k--;
                         thisPos = new MyVector(i,k);
                     }
@@ -494,35 +489,37 @@ public class BoardManager
                     k = i-1;
                     thisPos = new MyVector(k,j);
                     while( k > -1 && board[k][j] == E && !citadels.contains(thisPos) ){
-                        moves.add(thisPos);
+                        moves.add(new MyVector(thisPos));
                         k--;
                         thisPos = new MyVector(k,j);
                     }
-
-                    /* TEST PURPOSE
-                    if( moves.size() > 0){
-                        MyVector v = moves.get(rand.nextInt(moves.size()));
-                        moves.clear();
-                        moves.add(v);
-                    }*/
                 }//if
             }//for2
         }//for1
         return res;
     }//getPossibleMoves
 
+    private <E> void shuffleMoves(LinkedList<E> moves){
+        Random rand = new Random();
+        for( int i = 0; i<moves.size(); i++){
+            int r = rand.nextInt(moves.size());
+            E temp =  moves.get(i);
+            moves.set(i, moves.get(r));
+            moves.set(r, temp);
+        }
+    }//shuffleMoves
+
     public boolean kingEscapes() {
-        for( MyVector pos : escapes )
-            if( board[pos.x][pos.y] == K ) {
-                System.out.println("----------------------King escapes-------------------");
+        for( MyVector pos : escapes ) {
+            if (board[pos.x][pos.y] == K) {
                 isKingEscaped = true;
                 return true;
             }
+        }
         return false;
     }//kingReachesJolly
 
     public boolean kingWasCaptured() {
-        if( isKingCaptured ) System.out.println("----------------------King captured-------------------");
         return isKingCaptured;
     }//kingWasCaptured
 
@@ -534,7 +531,33 @@ public class BoardManager
                 if( board[i][j] == B) {
                     return false;
                 }
-        System.out.println("----------------------All pawns captured-------------------");
         return true;
     }//allPawnsCaptured
+
+    public boolean illegalState(){
+        int kcount = 0;
+        for( int i = 0; i<board.length; i++)
+            for( int j = 0; j<board.length; j++) {
+                if (i != 4 && j != 4 && citadels.contains(new MyVector(i, j)) && (board[i][j] == K || board[i][j] == W)) {
+                    return true;
+                }
+                if (i == 4 && j == 4 && board[i][j] == W ){ return true; }
+                if( board[i][j] == K ){
+                    kcount++;
+                    if( kcount > 1 ) return true;
+                }
+            }
+        return false;
+    }
+
+    public void printPawnNumber(){
+        int wCount = 0;
+        int bCount = 0;
+        for (int i = 0; i < board.length; i++)
+            for (int j = 0; j < board[i].length; j++)
+                if (board[i][j] == BoardManager.B) bCount++;
+                else if( board[i][j] == BoardManager.W ) wCount++;
+        System.out.println("White pawns: "+wCount);
+        System.out.println("Black pawns: "+bCount);
+    }
 }//BoardManager

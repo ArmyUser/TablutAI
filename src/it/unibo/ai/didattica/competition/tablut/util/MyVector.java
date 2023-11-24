@@ -7,6 +7,11 @@ public class MyVector {
         this.y = y;
     }
 
+    public MyVector(MyVector v){
+        this.x = v.x;
+        this.y = v.y;
+    }
+
     @Override
     public String toString() {
         return "(" +

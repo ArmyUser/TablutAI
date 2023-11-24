@@ -21,13 +21,13 @@ public class ActionCommand implements Command
     }//doIt
 
     public void undoIt(){
-        BoardManager.getInstance().resetPawn(to, from,toMove);
-
         char opposite;
         if( BoardManager.getInstance().kingWasCaptured() ) opposite = BoardManager.K;
         else opposite = toMove == BoardManager.W ? BoardManager.B : BoardManager.W;
 
         for( MyVector pos : capturedPosition )
             BoardManager.getInstance().respawnPawn(pos,opposite);
+
+        BoardManager.getInstance().resetPawn(to, from,toMove);
     }//undoIt
 }//ActionCommand

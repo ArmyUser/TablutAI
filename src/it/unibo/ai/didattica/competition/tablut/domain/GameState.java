@@ -14,18 +14,14 @@ import java.util.LinkedList;
  */
 public class GameState {
 	private final char toMove;
-	private final float utility;
 	private final HashMap<MyVector,LinkedList<MyVector>> moves;
 
-	public GameState(char toMove, float utility, HashMap<MyVector,LinkedList<MyVector>> moves){
+	public GameState(char toMove, HashMap<MyVector,LinkedList<MyVector>> moves){
 		this.toMove = toMove;
-		this.utility = utility;
 		this.moves = moves;
 	}
 
 	public char getPlayer(){ return toMove; }
-
-	public float getUtility(){ return utility; }
 
 	public HashMap<MyVector,LinkedList<MyVector>> getMoves(){ return moves; }
 }//State
