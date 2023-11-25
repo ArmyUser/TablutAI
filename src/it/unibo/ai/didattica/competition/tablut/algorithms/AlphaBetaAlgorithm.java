@@ -37,7 +37,7 @@ public class AlphaBetaAlgorithm extends AbstractAlgorithms{
     }//alphaBetaSearch
 
     protected float maxValue( GameState state, float alpha, float beta ){
-        if( game.terminalTest(state) )
+        if( game.terminalTest(state) != 0)
             return game.utility(state,player);
 
         float v = Integer.MIN_VALUE;
@@ -54,7 +54,7 @@ public class AlphaBetaAlgorithm extends AbstractAlgorithms{
     }//maxValue
 
     private float minValue(GameState state, float alpha, float beta){
-        if(game.terminalTest(state) )
+        if(game.terminalTest(state) != 0)
             return game.utility(state, player);
 
         float v = Integer.MAX_VALUE;

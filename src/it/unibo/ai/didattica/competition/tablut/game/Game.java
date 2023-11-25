@@ -20,7 +20,7 @@ public abstract class Game
 
     public abstract float utility(GameState state, char to_move);
 
-    public abstract boolean terminalTest(GameState state);
+    public abstract int terminalTest(GameState state);
 
     public abstract char toMove(GameState state);
 
@@ -39,12 +39,13 @@ public abstract class Game
                 System.out.printf("---> Player %s%n",state.getPlayer());
                 MyVector[] move = p.getNextAction(state);
                 state = result(state, move[0], move[1]);
+                MoveHistory.getInstance().insertMove(move[0], move[1]);
                 bm.printPawnNumber();
                 System.out.println("From: "+move[0]);
                 System.out.println("To: "+move[1]);
                 display();
                 histCmdHandler.clearHistory();
-                if( terminalTest(state) ){
+                if( terminalTest(state) != 0 ){
                     System.out.println("Final board");
                     display();
                     return utility(state, toMove(initial));

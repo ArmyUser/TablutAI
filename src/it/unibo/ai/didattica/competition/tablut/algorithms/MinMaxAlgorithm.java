@@ -21,7 +21,7 @@ public class MinMaxAlgorithm extends AbstractAlgorithms {
     }//minMaxDecision
 
     private float maxValue(GameState state){
-        if( game.terminalTest(state) )
+        if( game.terminalTest(state) != 0 )
             return game.utility(state,player);
 
         float v = Integer.MIN_VALUE;
@@ -36,7 +36,7 @@ public class MinMaxAlgorithm extends AbstractAlgorithms {
     }//maxValue
 
     private float minValue(GameState state){
-        if(game.terminalTest(state) )
+        if(game.terminalTest(state) != 0)
             return game.utility(state, player);
 
         float v = Integer.MAX_VALUE;

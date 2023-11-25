@@ -6,6 +6,7 @@ import it.unibo.ai.didattica.competition.tablut.domain.GameState;
 import it.unibo.ai.didattica.competition.tablut.player.AlphaBetaCutoffPlayer;
 import it.unibo.ai.didattica.competition.tablut.player.AlphaBetaPlayer;
 import it.unibo.ai.didattica.competition.tablut.player.Player;
+import it.unibo.ai.didattica.competition.tablut.player.QueryPlayer;
 import it.unibo.ai.didattica.competition.tablut.util.MyVector;
 
 import java.util.HashMap;
@@ -42,16 +43,16 @@ public class GameTablut extends Game{
     }
 
     @Override
-    public boolean terminalTest(GameState state) {
+    public int terminalTest(GameState state) {
         //The next player checks if state is terminal, so B & W win conditions are inverted
         if(state.getPlayer() == BoardManager.W) {
             if (bm.kingWasCaptured()){
-                return true;
+                return Integer.MIN_VALUE;
             }
         }
-        else if(bm.kingEscapes() || bm.allPawnsCaptured()) return true;
+        else if(bm.kingEscapes() || bm.allPawnsCaptured()) return Integer.MAX_VALUE;
 
-        return false;
+        return 0;
     }//terminalTest
 
     @Override
@@ -63,7 +64,8 @@ public class GameTablut extends Game{
         GameTablut tablut = new GameTablut(new GameState(BoardManager.W,BoardManager.getInstance().getPossibleMoves(BoardManager.W)));
         int maxDepth = 4;
         Player p1 = new AlphaBetaCutoffPlayer(tablut, tablut.histCmdHandler,maxDepth);
-        Player p2 = new AlphaBetaCutoffPlayer(tablut, tablut.histCmdHandler,maxDepth);
+        Player p2 = new QueryPlayer();
+        //Player p2 = new AlphaBetaCutoffPlayer(tablut, tablut.histCmdHandler,maxDepth);
         //Player p1 = new AlphaBetaPlayer(tablut, tablut.histCmdHandler);
         //Player p2 = new AlphaBetaPlayer(tablut, tablut.histCmdHandler);
         tablut.play(p1,p2);

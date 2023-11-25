@@ -127,7 +127,11 @@ public class BoardManager
         for (int i = 0; i < board.length; i++) {
             result.append(i+"\t");
             for (int j = 0; j < board.length; j++) {
-                if( board[i][j] == E ) result.append("□ ");
+                if( board[i][j] == E ){
+                    if( i == 4 && j == 4 ) result.append("⚿ ");
+                    else if( citadels.contains(new MyVector(i,j)) ) result.append("■ ");
+                    else result.append("□ ");
+                }
                 else result.append(board[i][j]+" ");
                 if (j == 8) result.append("\n");
 
@@ -527,6 +531,9 @@ public class BoardManager
                             l++;
                         }
                     }
+
+                    shuffleMoves(moves);
+
                 }//if
             }//for2
         }//for1

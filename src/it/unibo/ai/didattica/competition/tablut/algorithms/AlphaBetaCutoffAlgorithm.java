@@ -4,6 +4,7 @@ import it.unibo.ai.didattica.competition.tablut.command.HistoryCommandHandler;
 import it.unibo.ai.didattica.competition.tablut.domain.GameState;
 import it.unibo.ai.didattica.competition.tablut.game.BoardManager;
 import it.unibo.ai.didattica.competition.tablut.game.Game;
+import it.unibo.ai.didattica.competition.tablut.game.MoveHistory;
 import it.unibo.ai.didattica.competition.tablut.util.Heuristics;
 import it.unibo.ai.didattica.competition.tablut.util.MyVector;
 
@@ -14,6 +15,7 @@ public class AlphaBetaCutoffAlgorithm extends AbstractAlgorithms{
     private final int D;
     private final BoardManager bm;
     private final Heuristics heuristics;
+    private long startingTime;
 
     //HYPERPARAMETERS
     private final float WHITE_WEIGHTS = 2;
@@ -30,6 +32,7 @@ public class AlphaBetaCutoffAlgorithm extends AbstractAlgorithms{
     }
 
     public MyVector[] searchForBestAction(GameState state ){
+        startingTime = System.currentTimeMillis();
         player = state.getPlayer();
         float alpha = Integer.MIN_VALUE;
         float beta = Integer.MAX_VALUE;
@@ -39,6 +42,8 @@ public class AlphaBetaCutoffAlgorithm extends AbstractAlgorithms{
         for(Map.Entry<MyVector, LinkedList<MyVector>> entry : state.getMoves().entrySet() ){
             MyVector from = entry.getKey();
             for(MyVector to : entry.getValue() ){
+                if( (System.currentTimeMillis()-startingTime)/1000 > 30 ) return bestAction;
+
                 v = minValue(game.result(state,from,to), alpha, beta, 1);
                 handler.undo();
                 if( v > alpha ){
@@ -55,13 +60,20 @@ public class AlphaBetaCutoffAlgorithm extends AbstractAlgorithms{
     }//alphaBetaSearch
 
     private float maxValue(GameState state, float alpha, float beta, int depth ){
-        if( cutoff_test(state, depth) )
+        int utility = game.terminalTest(state);
+        if( depth > D || utility != 0 )
+            return utility + eval(state);
+
+        if( (System.currentTimeMillis()-startingTime)/1000 > 30 )
             return eval(state);
 
         float v = Integer.MIN_VALUE;
         for(Map.Entry<MyVector, LinkedList<MyVector>> entry : state.getMoves().entrySet() ){
             MyVector from = entry.getKey();
             for(MyVector to : entry.getValue() ) {
+                //Loop avoidance
+                if( MoveHistory.getInstance().loopMove(from, to) ) continue;
+
                 v = Math.max(v, minValue(game.result(state, from, to), alpha, beta, depth + 1));
                 handler.undo();
                 if (v >= beta) return v;
@@ -72,13 +84,19 @@ public class AlphaBetaCutoffAlgorithm extends AbstractAlgorithms{
     }//maxValue
 
     private float minValue(GameState state, float alpha, float beta, int depth){
-        if( cutoff_test(state, depth) )
-            return eval(state);
+        int utility = game.terminalTest(state);
+        if( depth > D || utility != 0 )
+            return utility + eval(state);
+
+        if( (System.currentTimeMillis()-startingTime)/1000 > 30 ) return eval(state);
 
         float v = Integer.MAX_VALUE;
         for(Map.Entry<MyVector, LinkedList<MyVector>> entry : state.getMoves().entrySet() ){
             MyVector from = entry.getKey();
             for(MyVector to : entry.getValue() ) {
+                //Loop avoidance
+                if( MoveHistory.getInstance().loopMove(from, to) ) continue;
+
                 v = Math.min(v, maxValue(game.result(state, from, to), alpha, beta, depth + 1));
                 handler.undo();
                 if (v <= alpha) return v;
@@ -114,7 +132,9 @@ public class AlphaBetaCutoffAlgorithm extends AbstractAlgorithms{
 
     // we set a fixed depth limit "d" so that CUTOFF-TEST(state, depth) returns true for all depth greater than
     // some fixed depth d. (It must also return true for all terminal states, just as TERMINAL-TEST
+    /*
     private boolean cutoff_test(GameState state, int currentDepth) {
-        return currentDepth > D || game.terminalTest(state);
+        return currentDepth > D || game.terminalTest(state) != 0;
     }//currentDepth
+    */
 }//AlphaBetaCutoffAlgorithm

@@ -6,6 +6,8 @@ import java.util.HashSet;
 
 public class Heuristics {
     private final BoardManager bm;
+    private final float KING_CAPTURED_WEIGHT = 30f;
+    private final float ESCAPE_COEFFICIENT = 30f;
 
     public Heuristics(){
         bm = BoardManager.getInstance();
@@ -39,14 +41,14 @@ public class Heuristics {
         }
 
         //KING CAPTURED
-        if( i == 9 && j == 9) return new float[]{-10,-10};
+        if( i == 9 && j == 9) return new float[]{-KING_CAPTURED_WEIGHT,-10};
 
         //TOP SAFETY
         int k = i-1;
         while( k > 0 && board[k][j] == BoardManager.E && !citadels.contains(new MyVector(k,j) ) ) k--;
         if( k == -1 ){
             safety += 2.5f;
-            escapeValue += 2.5f;
+            escapeValue += ESCAPE_COEFFICIENT;
         }else if(board[k][j] == BoardManager.W){
             safety += 2.5f;
         }
@@ -56,7 +58,7 @@ public class Heuristics {
         while( k < 8 && board[k][j] == BoardManager.E && !citadels.contains(new MyVector(k,j) ) ) k++;
         if( k == 9 ){
             safety += 2.5f;
-            escapeValue += 2.5f;
+            escapeValue += ESCAPE_COEFFICIENT;
         }else if(board[k][j] == BoardManager.W){
             safety += 2.5f;
         }
@@ -66,7 +68,7 @@ public class Heuristics {
         while( k < 8 && board[i][k] == BoardManager.E && !citadels.contains(new MyVector(i,k) ) ) k++;
         if( k == 9 ){
             safety += 2.5f;
-            escapeValue += 2.5f;
+            escapeValue += ESCAPE_COEFFICIENT;
         }else if(board[i][k] == BoardManager.W){
             safety += 2.5f;
         }
@@ -76,7 +78,7 @@ public class Heuristics {
         while( k > 0 && board[i][k] == BoardManager.E && !citadels.contains(new MyVector(i,k) ) ) k--;
         if( k == -1 ){
             safety += 2.5f;
-            escapeValue += 2.5f;
+            escapeValue += ESCAPE_COEFFICIENT;
         }else if(board[i][k] == BoardManager.W){
             safety += 2.5f;
         }
@@ -86,27 +88,30 @@ public class Heuristics {
 
     public float getBridgeValue(){
         char[][] board = bm.getBoard();
-        float val = 4;
+        float val = 12;
+        float bridgeCoefficient = 0.75f;
 
-        if( board[2][3] == BoardManager.B ) val -= 0.25f;
-        if( board[3][2] == BoardManager.B ) val -= 0.25f;
-        if( board[1][2] == BoardManager.B ) val -= 0.25f;
-        if( board[2][1] == BoardManager.B ) val -= 0.25f;
+        if( board[4][4] == BoardManager.K ) bridgeCoefficient = 0.1f;
 
-        if( board[1][6] == BoardManager.B ) val -= 0.25f;
-        if( board[2][7] == BoardManager.B ) val -= 0.25f;
-        if( board[2][5] == BoardManager.B ) val -= 0.25f;
-        if( board[3][6] == BoardManager.B ) val -= 0.25f;
+        if( board[2][3] == BoardManager.B ) val -= bridgeCoefficient;
+        if( board[3][2] == BoardManager.B ) val -= bridgeCoefficient;
+        if( board[1][2] == BoardManager.B ) val -= bridgeCoefficient;
+        if( board[2][1] == BoardManager.B ) val -= bridgeCoefficient;
 
-        if( board[6][1] == BoardManager.B ) val -= 0.25f;
-        if( board[7][2] == BoardManager.B ) val -= 0.25f;
-        if( board[5][2] == BoardManager.B ) val -= 0.25f;
-        if( board[6][3] == BoardManager.B ) val -= 0.25f;
+        if( board[1][6] == BoardManager.B ) val -= bridgeCoefficient;
+        if( board[2][7] == BoardManager.B ) val -= bridgeCoefficient;
+        if( board[2][5] == BoardManager.B ) val -= bridgeCoefficient;
+        if( board[3][6] == BoardManager.B ) val -= bridgeCoefficient;
 
-        if( board[7][6] == BoardManager.B ) val -= 0.25f;
-        if( board[6][7] == BoardManager.B ) val -= 0.25f;
-        if( board[6][5] == BoardManager.B ) val -= 0.25f;
-        if( board[5][6] == BoardManager.B ) val -= 0.25f;
+        if( board[6][1] == BoardManager.B ) val -= bridgeCoefficient;
+        if( board[7][2] == BoardManager.B ) val -= bridgeCoefficient;
+        if( board[5][2] == BoardManager.B ) val -= bridgeCoefficient;
+        if( board[6][3] == BoardManager.B ) val -= bridgeCoefficient;
+
+        if( board[7][6] == BoardManager.B ) val -= bridgeCoefficient;
+        if( board[6][7] == BoardManager.B ) val -= bridgeCoefficient;
+        if( board[6][5] == BoardManager.B ) val -= bridgeCoefficient;
+        if( board[5][6] == BoardManager.B ) val -= bridgeCoefficient;
 
         return val;
     }//getBridgeConfig
