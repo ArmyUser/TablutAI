@@ -235,12 +235,14 @@ public class BoardManager
 
     private LinkedList<MyVector> capture(MyVector to, char currentPlayer, char opposite){
         LinkedList<MyVector> captured = new LinkedList<>();
+        char eventualKing = currentPlayer == W ? K : '.';
 
         //top capture
         if( to.x > 1 ){
-            if( board[to.x-1][to.y] == opposite && !citadels.contains(new MyVector(to.x-1, to.y))){
+            if( board[to.x-1][to.y] == opposite ){
                 //Captured by 2 allies or by one allies and one citadel (empty throne included)
-                if( board[to.x-2][to.y] == currentPlayer || citadels.contains(new MyVector(to.x-2,to.y)) ){
+                if( board[to.x-2][to.y] == currentPlayer ||  board[to.x-2][to.y] == eventualKing ||
+                        citadels.contains(new MyVector(to.x-2,to.y)) ){
                     removePawn(to.x-1,to.y);
                     captured.add(new MyVector(to.x-1,to.y));
                 }
@@ -249,9 +251,10 @@ public class BoardManager
 
         //bottom capture
         if( to.x < 7 ){
-            if( board[to.x+1][to.y] == opposite && !citadels.contains(new MyVector(to.x+1, to.y))){
+            if( board[to.x+1][to.y] == opposite ){
                 //Captured by 2 allies or by one allies and one citadel (empty throne included)
-                if( board[to.x+2][to.y] == currentPlayer || citadels.contains(new MyVector(to.x+2,to.y)) ) {
+                if( board[to.x+2][to.y] == currentPlayer ||  board[to.x+2][to.y] == eventualKing
+                        || citadels.contains(new MyVector(to.x+2,to.y)) ) {
                     removePawn(to.x+1,to.y);
                     captured.add(new MyVector(to.x+1,to.y));
                 }
@@ -260,9 +263,10 @@ public class BoardManager
 
         //right capture
         if( to.y < 7 ){
-            if( board[to.x][to.y+1] == opposite && !citadels.contains(new MyVector(to.x, to.y+1))){
+            if( board[to.x][to.y+1] == opposite ){
                 //Captured by 2 allies or by one allies and one citadel (empty throne included)
-                if( board[to.x][to.y+2] == currentPlayer || citadels.contains(new MyVector(to.x,to.y+2)) ){
+                if( board[to.x][to.y+2] == currentPlayer ||  board[to.x][to.y+2] == eventualKing
+                        || citadels.contains(new MyVector(to.x,to.y+2)) ){
                     removePawn(to.x,to.y+1);
                     captured.add(new MyVector(to.x,to.y+1));
                 }
@@ -273,7 +277,8 @@ public class BoardManager
         if( to.y > 1 ){
             if( board[to.x][to.y-1] == opposite ){
                 //Captured by 2 allies or by one allies and one citadel (empty throne included)
-                if( board[to.x][to.y-2] == currentPlayer || citadels.contains(new MyVector(to.x,to.y-2)) ){
+                if( board[to.x][to.y-2] == currentPlayer ||  board[to.x][to.y-2] == eventualKing
+                        || citadels.contains(new MyVector(to.x,to.y-2)) ){
                     removePawn(to.x,to.y-1);
                     captured.add(new MyVector(to.x,to.y-1));
                 }
@@ -494,6 +499,33 @@ public class BoardManager
                         moves.add(new MyVector(thisPos));
                         k--;
                         thisPos = new MyVector(k,j);
+                    }
+
+                    //If the black pawn is inside a citadel
+                    if( citadels.contains(new MyVector(i,j)) && currentPlayer == B ){
+                        int l = i-1;
+                        while( l > 0 && citadels.contains(new MyVector(l,j)) && board[l][j] == E ){
+                            moves.add(new MyVector(l,j));
+                            l--;
+                        }
+
+                        l = i+1;
+                        while( l < 9 && citadels.contains(new MyVector(l,j)) && board[l][j] == E ){
+                            moves.add(new MyVector(l,j));
+                            l++;
+                        }
+
+                        l = j-1;
+                        while( l > 0 && citadels.contains(new MyVector(i,l)) && board[i][l] == E ){
+                            moves.add(new MyVector(i,l));
+                            l--;
+                        }
+
+                        l = j+1;
+                        while( l < 9 && citadels.contains(new MyVector(i,l)) && board[i][l] == E ){
+                            moves.add(new MyVector(i,l));
+                            l++;
+                        }
                     }
                 }//if
             }//for2

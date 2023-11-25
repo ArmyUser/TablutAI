@@ -15,7 +15,7 @@ public abstract class AIPlayer implements Player{
     public MyVector[] getNextAction(GameState state){
         long startingTime = System.currentTimeMillis();
         MyVector[] move = algorithm.searchForBestAction(state);
-        System.out.println("Time spent for the move: "+(System.currentTimeMillis()-startingTime)+"ms");
+        System.out.println("Time spent for the move: "+(System.currentTimeMillis()-startingTime)/1000+"s");
         return move;
     }//getNextAction
 }//Player

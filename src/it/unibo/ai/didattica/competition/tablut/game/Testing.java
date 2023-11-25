@@ -4,6 +4,9 @@ import it.unibo.ai.didattica.competition.tablut.command.ActionCommand;
 import it.unibo.ai.didattica.competition.tablut.command.HistoryCommandHandler;
 import it.unibo.ai.didattica.competition.tablut.util.MyVector;
 
+import java.util.LinkedList;
+import java.util.Map;
+
 public class Testing {
     private static void testThroneKingCapture(){
         /*
@@ -191,7 +194,30 @@ public class Testing {
         System.out.println(BoardManager.getInstance());
     }//testCitadelKingCapture
 
+    private static void testCitadelsMoves(){
+        /*
+        Throne neighborhood configuration:
+            . C C B .
+            . . C . .
+            . . . . .
 
+        The black on the top will move in the cell below
+         */
+
+        //configuration
+        char[][] board = BoardManager.getInstance().getBoard();
+        board[0][3] = BoardManager.E;
+        board[0][4] = BoardManager.E;
+        board[0][5] = BoardManager.B;
+
+        //Black move
+        System.out.println(BoardManager.getInstance());
+        var map = BoardManager.getInstance().getPossibleMoves(BoardManager.B);
+
+        for(Map.Entry<MyVector, LinkedList<MyVector>> entry : map.entrySet() ){
+            System.out.println(entry.getKey()+": "+entry.getValue()+"\n");
+        }
+    }//testCitadelsMoves
 
     public static void main(String[] args) {
         //testThroneKingCapture(); OK!
@@ -199,6 +225,6 @@ public class Testing {
         //testGeneralKingCapture(); OK!
         //testCitadelKingCapture(); OK!
         //testDoAndUndo();
-        testKingEscape();
+        //testCitadelsMoves();
     }//main
 }//Testing

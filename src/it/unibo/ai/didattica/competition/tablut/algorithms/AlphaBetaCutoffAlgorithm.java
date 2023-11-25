@@ -18,8 +18,9 @@ public class AlphaBetaCutoffAlgorithm extends AbstractAlgorithms{
     //HYPERPARAMETERS
     private final float WHITE_WEIGHTS = 2;
     private final float H1_WEIGHT = 50f; //#PAWNS
-    private final float H2_WEIGHT = 10f; //DISTANCE
-    private final float H3_WEIGHT = 50f; //SAFETY
+    private final float H2_WEIGHT = 50f; //SAFETY
+    private final float H3_WEIGHT = 25f; //ESCAPE
+    private final float H4_WEIGHT = 2.5f; //BRIDGE
 
     public AlphaBetaCutoffAlgorithm(Game game, HistoryCommandHandler handler, int maxDepth) {
         super(game, handler);
@@ -88,25 +89,24 @@ public class AlphaBetaCutoffAlgorithm extends AbstractAlgorithms{
     }//minValue
 
     private float eval(GameState state) {
-        float h1, h2, h3;
+        float whitePawnsFraction, bridgePosition;
 
         //HEURISTIC 1 (PAWNS NUMBER)
         MyVector counts = heuristics.getNumberOfPawns(); //wCount, bCount
         float wCount = counts.x * WHITE_WEIGHTS;
         float bCount = counts.y;
-        h1 = wCount / bCount;
+        whitePawnsFraction = wCount / bCount;
 
-        //HEURISTIC 2 (HAMMING KING ESCAPE DISTANCE)
-        h2 = 1;//heuristics.getDistance();
 
-        //HEURISTIC 3 (KING SAFETY)
-        h3 = heuristics.computeKingSafety();
+        //HEURISTIC 2_3 (KING SAFETY AND ESCAPE VALUE)
+        float[] kingSafety_escapeValue = heuristics.computeKingSafetyAndEscapeValue();
 
-        //ARMANDO'S HEURISTIC
-        float hArmy = heuristics.getBridgeValue();
+        //HEURISTIC 4 (BRIDGE POSITION)
+        bridgePosition = heuristics.getBridgeValue();
 
         //if( h2 == 0 ) return Integer.MIN_VALUE;
-        float h = H1_WEIGHT*h1 + H2_WEIGHT/h2 + H3_WEIGHT*h3 + 10*hArmy;
+        float h = H1_WEIGHT*whitePawnsFraction + H2_WEIGHT*kingSafety_escapeValue[0]
+                + H3_WEIGHT*kingSafety_escapeValue[1] + H4_WEIGHT*bridgePosition;
 
         if( state.getPlayer() == BoardManager.W ) return -h;
         else return h;

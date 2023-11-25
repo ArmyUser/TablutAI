@@ -23,30 +23,11 @@ public class Heuristics {
         return new MyVector(wCount,bCount);
     }//getNumberOfPawns
 
-    public float getDistance(){
-        char[][] board = bm.getBoard();
-        float dist = 0;
-
-        int i = 0;
-        int j = 0;
-        while( i < 8 ){
-            j = 0;
-            while( j < 8 && board[i][j] != BoardManager.K ) j++;
-            if( board[i][j] == BoardManager.K ) break;
-            i++;
-        }
-
-        for( MyVector e : bm.getEscapes() )
-            dist = (float) Math.min(dist, Math.sqrt((e.x - i)^2 + (e.y - j)^2));
-
-
-        return dist;
-    }//getKingHammingDistance
-
-    public float computeKingSafety(){
+    public float[] computeKingSafetyAndEscapeValue(){
         char[][] board = bm.getBoard();
         HashSet<MyVector> citadels = bm.getCitadels();
         float safety = 0;
+        float escapeValue = 0;
 
         int i = 0;
         int j = 0;
@@ -58,29 +39,49 @@ public class Heuristics {
         }
 
         //KING CAPTURED
-        if( i == 9 && j == 9) return -10;
+        if( i == 9 && j == 9) return new float[]{-10,-10};
 
         //TOP SAFETY
         int k = i-1;
         while( k > 0 && board[k][j] == BoardManager.E && !citadels.contains(new MyVector(k,j) ) ) k--;
-        if( k == -1 || board[k][j] == BoardManager.W ) safety += 2.5f;
+        if( k == -1 ){
+            safety += 2.5f;
+            escapeValue += 2.5f;
+        }else if(board[k][j] == BoardManager.W){
+            safety += 2.5f;
+        }
 
         //BOT SAFETY
         k = i+1;
         while( k < 8 && board[k][j] == BoardManager.E && !citadels.contains(new MyVector(k,j) ) ) k++;
-        if( k == 9 || board[k][j] == BoardManager.W ) safety += 2.5f;
+        if( k == 9 ){
+            safety += 2.5f;
+            escapeValue += 2.5f;
+        }else if(board[k][j] == BoardManager.W){
+            safety += 2.5f;
+        }
 
         //RIGHT SAFETY
         k = j+1;
         while( k < 8 && board[i][k] == BoardManager.E && !citadels.contains(new MyVector(i,k) ) ) k++;
-        if( k == 9 || board[i][k] == BoardManager.W ) safety += 2.5f;
+        if( k == 9 ){
+            safety += 2.5f;
+            escapeValue += 2.5f;
+        }else if(board[i][k] == BoardManager.W){
+            safety += 2.5f;
+        }
 
         //LEFT SAFETY
         k = j-1;
         while( k > 0 && board[i][k] == BoardManager.E && !citadels.contains(new MyVector(i,k) ) ) k--;
-        if( k == -1 || board[i][k] == BoardManager.W ) safety += 2.5f;
+        if( k == -1 ){
+            safety += 2.5f;
+            escapeValue += 2.5f;
+        }else if(board[i][k] == BoardManager.W){
+            safety += 2.5f;
+        }
 
-        return safety;
+        return new float[]{safety,escapeValue};
     }//computeKingSafety
 
     public float getBridgeValue(){
