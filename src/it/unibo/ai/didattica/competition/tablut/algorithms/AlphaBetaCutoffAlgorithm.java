@@ -8,6 +8,8 @@ import it.unibo.ai.didattica.competition.tablut.game.MoveHistory;
 import it.unibo.ai.didattica.competition.tablut.util.Heuristics;
 import it.unibo.ai.didattica.competition.tablut.util.MyVector;
 
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.Map;
 
@@ -18,17 +20,45 @@ public class AlphaBetaCutoffAlgorithm extends AbstractAlgorithms{
     private long startingTime;
 
     //HYPERPARAMETERS
-    private final float WHITE_WEIGHTS = 2;
-    private final float H1_WEIGHT = 50f; //#PAWNS
-    private final float H2_WEIGHT = 50f; //SAFETY
-    private final float H3_WEIGHT = 25f; //ESCAPE
-    private final float H4_WEIGHT = 2.5f; //BRIDGE
+    private float WHITE_WEIGHTS = 2;
+    private float H1_WEIGHT = 50f; //#PAWNS
+    private float H2_WEIGHT = 50f; //SAFETY
+    private float H3_WEIGHT = 25f; //ESCAPE
+    private float H4_WEIGHT = 2.5f; //BRIDGE
+    private float KING_CAPTURED_WEIGHT = 30f;
+    private float ESCAPE_COEFFICIENT = 1f;       // <----
+    private float BRIDGE_COEFFICIENT = 2.5f;       // <----
+    private float SAFETY_COEFFICIENT = 2.5f;       // <----
 
-    public AlphaBetaCutoffAlgorithm(Game game, HistoryCommandHandler handler, int maxDepth) {
+    private final int TIME_TRESHOLD = 50;
+    private final char myPlayer;
+
+    public AlphaBetaCutoffAlgorithm(Game game, HistoryCommandHandler handler, int maxDepth, char player) {
         super(game, handler);
         D = maxDepth;
         bm = BoardManager.getInstance();
         heuristics = new Heuristics();
+        this.myPlayer = player;
+    }
+
+    public AlphaBetaCutoffAlgorithm(Game game, HistoryCommandHandler handler, int maxDepth, float whiteWeights,
+                                    float h1Wheight, float h2Wheight, float h3Wheight, float h4Wheight,
+                                    float escapeCoefficient, float bridgeCoefficient, float safetyCoefficient,
+                                    char player) {
+        super(game, handler);
+        D = maxDepth;
+        bm = BoardManager.getInstance();
+        heuristics = new Heuristics();
+
+        WHITE_WEIGHTS = whiteWeights;
+        H1_WEIGHT = h1Wheight;
+        H2_WEIGHT = h2Wheight;
+        H3_WEIGHT = h3Wheight;
+        H4_WEIGHT = h4Wheight;
+        ESCAPE_COEFFICIENT = escapeCoefficient;
+        BRIDGE_COEFFICIENT = bridgeCoefficient;
+        SAFETY_COEFFICIENT = safetyCoefficient;
+        this.myPlayer = player;
     }
 
     public MyVector[] searchForBestAction(GameState state ){
@@ -39,10 +69,10 @@ public class AlphaBetaCutoffAlgorithm extends AbstractAlgorithms{
         MyVector[] bestAction = new MyVector[2];
         float v = 0;
 
-        for(Map.Entry<MyVector, LinkedList<MyVector>> entry : state.getMoves().entrySet() ){
+        for(Map.Entry<MyVector, HashSet<MyVector>> entry : state.getMoves().entrySet() ){
             MyVector from = entry.getKey();
             for(MyVector to : entry.getValue() ){
-                if( (System.currentTimeMillis()-startingTime)/1000 > 30 ) return bestAction;
+                if( (System.currentTimeMillis()-startingTime)/1000 > TIME_TRESHOLD ) return bestAction;
 
                 v = minValue(game.result(state,from,to), alpha, beta, 1);
                 handler.undo();
@@ -60,15 +90,15 @@ public class AlphaBetaCutoffAlgorithm extends AbstractAlgorithms{
     }//alphaBetaSearch
 
     private float maxValue(GameState state, float alpha, float beta, int depth ){
-        int utility = game.terminalTest(state);
-        if( depth > D || utility != 0 )
-            return utility + eval(state);
+        int utility = game.terminalTest(state, myPlayer);
+        if( utility != 0 ) return utility;
+        if( depth > D ) return eval(state);
 
-        if( (System.currentTimeMillis()-startingTime)/1000 > 30 )
+        if( (System.currentTimeMillis()-startingTime)/1000 > TIME_TRESHOLD )
             return eval(state);
 
         float v = Integer.MIN_VALUE;
-        for(Map.Entry<MyVector, LinkedList<MyVector>> entry : state.getMoves().entrySet() ){
+        for(Map.Entry<MyVector, HashSet<MyVector>> entry : state.getMoves().entrySet() ){
             MyVector from = entry.getKey();
             for(MyVector to : entry.getValue() ) {
                 //Loop avoidance
@@ -84,14 +114,14 @@ public class AlphaBetaCutoffAlgorithm extends AbstractAlgorithms{
     }//maxValue
 
     private float minValue(GameState state, float alpha, float beta, int depth){
-        int utility = game.terminalTest(state);
-        if( depth > D || utility != 0 )
-            return utility + eval(state);
+        int utility = game.terminalTest(state, myPlayer);
+        if( utility != 0 ) return utility;
+        if( depth > D ) return eval(state);
 
-        if( (System.currentTimeMillis()-startingTime)/1000 > 30 ) return eval(state);
+        if( (System.currentTimeMillis()-startingTime)/1000 > TIME_TRESHOLD ) return eval(state);
 
         float v = Integer.MAX_VALUE;
-        for(Map.Entry<MyVector, LinkedList<MyVector>> entry : state.getMoves().entrySet() ){
+        for(Map.Entry<MyVector, HashSet<MyVector>> entry : state.getMoves().entrySet() ){
             MyVector from = entry.getKey();
             for(MyVector to : entry.getValue() ) {
                 //Loop avoidance
@@ -109,7 +139,7 @@ public class AlphaBetaCutoffAlgorithm extends AbstractAlgorithms{
     private float eval(GameState state) {
         float whitePawnsFraction, bridgePosition;
 
-        //HEURISTIC 1 (PAWNS NUMBER)
+        //HEURISTIC 1 (WHITE AND BLACK PAWNS NUMBER )
         MyVector counts = heuristics.getNumberOfPawns(); //wCount, bCount
         float wCount = counts.x * WHITE_WEIGHTS;
         float bCount = counts.y;
@@ -117,16 +147,16 @@ public class AlphaBetaCutoffAlgorithm extends AbstractAlgorithms{
 
 
         //HEURISTIC 2_3 (KING SAFETY AND ESCAPE VALUE)
-        float[] kingSafety_escapeValue = heuristics.computeKingSafetyAndEscapeValue();
+        float[] kingSafety_escapeValue = heuristics.computeKingSafetyAndEscapeValue(SAFETY_COEFFICIENT,ESCAPE_COEFFICIENT);
 
         //HEURISTIC 4 (BRIDGE POSITION)
-        bridgePosition = heuristics.getBridgeValue();
+        bridgePosition = heuristics.getBridgeValue(BRIDGE_COEFFICIENT);
 
         //if( h2 == 0 ) return Integer.MIN_VALUE;
         float h = H1_WEIGHT*whitePawnsFraction + H2_WEIGHT*kingSafety_escapeValue[0]
                 + H3_WEIGHT*kingSafety_escapeValue[1] + H4_WEIGHT*bridgePosition;
 
-        if( state.getPlayer() == BoardManager.W ) return -h;
+        if( state.getPlayer() == myPlayer ) return -h;
         else return h;
     }//eval
 

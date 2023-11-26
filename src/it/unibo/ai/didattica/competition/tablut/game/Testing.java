@@ -2,8 +2,13 @@ package it.unibo.ai.didattica.competition.tablut.game;
 
 import it.unibo.ai.didattica.competition.tablut.command.ActionCommand;
 import it.unibo.ai.didattica.competition.tablut.command.HistoryCommandHandler;
+import it.unibo.ai.didattica.competition.tablut.domain.GameState;
+import it.unibo.ai.didattica.competition.tablut.player.AlphaBetaCutoffPlayer;
+import it.unibo.ai.didattica.competition.tablut.player.Player;
 import it.unibo.ai.didattica.competition.tablut.util.MyVector;
 
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.Map;
 
@@ -214,10 +219,99 @@ public class Testing {
         System.out.println(BoardManager.getInstance());
         var map = BoardManager.getInstance().getPossibleMoves(BoardManager.B);
 
-        for(Map.Entry<MyVector, LinkedList<MyVector>> entry : map.entrySet() ){
+        for(Map.Entry<MyVector, HashSet<MyVector>> entry : map.entrySet() ){
             System.out.println(entry.getKey()+": "+entry.getValue()+"\n");
         }
     }//testCitadelsMoves
+
+    private static boolean exec(float whiteWeights, float h1Wheight, float h2Wheight,
+                               float h3Wheight, float h4Wheight, float escapeCoefficient,
+                                float bridgeCoefficient, float safetyCoefficient){
+
+        int maxDepth = 4;
+        BoardManager.getInstance().resetBoard();
+        GameTablut tablut = new GameTablut(new GameState(BoardManager.W,BoardManager.getInstance().getPossibleMoves(BoardManager.W)));
+
+        Player p1 = new AlphaBetaCutoffPlayer(tablut, tablut.histCmdHandler,maxDepth,
+                whiteWeights, h1Wheight, h2Wheight, h3Wheight, h4Wheight, escapeCoefficient,
+                bridgeCoefficient, safetyCoefficient, BoardManager.W);
+
+
+        Player p2 = new AlphaBetaCutoffPlayer(tablut, tablut.histCmdHandler,maxDepth,
+                whiteWeights, h1Wheight, h2Wheight, h3Wheight, h4Wheight, escapeCoefficient,
+                bridgeCoefficient, safetyCoefficient, BoardManager.B);
+
+
+        return tablut.play(p1,p2);
+    }//exec
+
+    private static HashMap<Boolean,LinkedList<Float>> tune(){
+        HashMap<Boolean,LinkedList<Float>> results = new HashMap<>();
+        float whiteWeights, h1Wheight, h2Wheight, h3Wheight, h4Wheight, escapeCoefficient, bridgeCoefficient, safetyCoefficient;
+
+        for( float i=0.05f; i<0.7f; i+=0.05f ){
+            for( float j=i+0.05f; j<1-0.25f; j+=0.05f ){
+                for( float k=j+0.05f; k<1-0.2f; k+=0.05f ){
+                    for( float l=k+0.05f; l<1-0.15f; l+=0.05f ){
+                        for( float h=l+0.05f; h<1-0.1f; h+=0.05f ){
+                            for( float g=h+0.05f; g<1-0.05f; g+=0.05f ){
+                                for( float f=g+0.05f; f<1; f+=0.05f){
+                                    whiteWeights = i;
+                                    h1Wheight = j-i;
+                                    h2Wheight = k-j;
+                                    h3Wheight = l-k;
+                                    h4Wheight = h-l;
+                                    escapeCoefficient = g-h;
+                                    bridgeCoefficient = f-g;
+                                    safetyCoefficient = 1-f; //H8
+
+                                    boolean winner = exec(
+                                            whiteWeights,
+                                            h1Wheight,
+                                            h2Wheight,
+                                            h3Wheight,
+                                            h4Wheight,
+                                            escapeCoefficient,
+                                            bridgeCoefficient,
+                                            safetyCoefficient );
+
+                                    LinkedList<Float> params = new LinkedList<>();
+                                    params.add(whiteWeights);
+                                    params.add(h1Wheight);
+                                    params.add(h2Wheight);
+                                    params.add(h3Wheight);
+                                    params.add(h4Wheight);
+                                    params.add(escapeCoefficient);
+                                    params.add(bridgeCoefficient);
+                                    params.add(safetyCoefficient);
+
+                                    results.put(winner, params);
+                                    printTuningResult(winner,params);
+                                }//H7
+                            }//H6
+                        }//H5
+                    }//H4
+                }//H3
+            }//H2
+        }//H1
+
+        return results;
+    }//tune
+
+    private static void printTuningResults(){
+        for( Map.Entry<Boolean, LinkedList<Float>> entry : tune().entrySet())
+            printTuningResult(entry.getKey(), entry.getValue());
+    }//printTuningResults
+
+    private static void printTuningResult(boolean winner, LinkedList<Float> params){
+        char cWinner = winner ? 'W' : 'B';
+        System.out.println("Winner: "+cWinner);
+        System.out.print("Parameters configuration: ");
+        for( float param : params )
+            System.out.print(param+", ");
+
+        System.out.println("\n\n\n");
+    }//printTuningResult
 
     public static void main(String[] args) {
         //testThroneKingCapture(); OK!
@@ -226,5 +320,6 @@ public class Testing {
         //testCitadelKingCapture(); OK!
         //testDoAndUndo();
         //testCitadelsMoves();
+        printTuningResults();
     }//main
 }//Testing

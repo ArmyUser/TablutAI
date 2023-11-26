@@ -107,6 +107,10 @@ public class BoardManager
         return Instance;
     }
 
+    public void resetBoard(){
+        Instance = new BoardManager();
+    }//resetBoard
+
     protected char board[][];
     protected char turn;
 
@@ -455,8 +459,8 @@ public class BoardManager
         return true;
     }//equals
 
-    public HashMap<MyVector,LinkedList<MyVector>> getPossibleMoves(char currentPlayer) {
-        HashMap<MyVector,LinkedList<MyVector>> res = new HashMap<>(); //Format: from position -> list of allowed positions
+    public HashMap<MyVector,HashSet<MyVector>> getPossibleMoves(char currentPlayer) {
+        HashMap<MyVector,HashSet<MyVector>> res = new HashMap<>(); //Format: from position -> list of allowed positions
         MyVector thisPos;
 
         char eventualKing = '.';
@@ -465,8 +469,8 @@ public class BoardManager
         for( int i=0; i < board.length; i++){
             for( int j=0; j < board.length; j++){
                 //If it is the turn of the current player, then
-                if( board[i][j] == currentPlayer || board[i][j] == eventualKing ){
-                    LinkedList<MyVector> moves = new LinkedList<>();
+                if( (board[i][j] == currentPlayer || board[i][j] == eventualKing) ){
+                    HashSet<MyVector> moves = new HashSet<>();
                     res.put(new MyVector(i,j),moves);
 
                     //Right side moves
@@ -508,32 +512,37 @@ public class BoardManager
                     //If the black pawn is inside a citadel
                     if( citadels.contains(new MyVector(i,j)) && currentPlayer == B ){
                         int l = i-1;
-                        while( l > 0 && citadels.contains(new MyVector(l,j)) && board[l][j] == E ){
-                            moves.add(new MyVector(l,j));
+                        while( l > -1 && (i!=4 || l!=4) && board[l][j] == E ){
+                            if( i!=1 && l==0) break;
+                            if( !moves.contains(new MyVector(l,j)) )
+                                moves.add(new MyVector(l,j));
                             l--;
                         }
 
                         l = i+1;
-                        while( l < 9 && citadels.contains(new MyVector(l,j)) && board[l][j] == E ){
-                            moves.add(new MyVector(l,j));
+                        while( l < 9 && (l!=4 || j!=4) && board[l][j] == E ){
+                            if( i!=7 && l==8) break;
+                            if( !moves.contains(new MyVector(l,j)) )
+                                moves.add(new MyVector(l,j));
                             l++;
                         }
 
                         l = j-1;
-                        while( l > 0 && citadels.contains(new MyVector(i,l)) && board[i][l] == E ){
-                            moves.add(new MyVector(i,l));
+                        while( l > -1 && (i!=4 || l!=4) && board[i][l] == E ){
+                            if( j!=1 && l==0) break;
+                            if( !moves.contains(new MyVector(i,l)) )
+                                moves.add(new MyVector(i,l));
                             l--;
                         }
 
                         l = j+1;
-                        while( l < 9 && citadels.contains(new MyVector(i,l)) && board[i][l] == E ){
-                            moves.add(new MyVector(i,l));
+                        while( l < 9 && (i!=4 || l!=4) && board[i][l] == E ){
+                            if( j!=7 && l==8) break;
+                            if( !moves.contains(new MyVector(i,l)) )
+                                moves.add(new MyVector(i,l));
                             l++;
                         }
                     }
-
-                    shuffleMoves(moves);
-
                 }//if
             }//for2
         }//for1

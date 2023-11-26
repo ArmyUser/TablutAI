@@ -6,6 +6,7 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedList;
 
 /**
@@ -14,14 +15,14 @@ import java.util.LinkedList;
  */
 public class GameState {
 	private final char toMove;
-	private final HashMap<MyVector,LinkedList<MyVector>> moves;
+	private final HashMap<MyVector, HashSet<MyVector>> moves;
 
-	public GameState(char toMove, HashMap<MyVector,LinkedList<MyVector>> moves){
+	public GameState(char toMove, HashMap<MyVector,HashSet<MyVector>> moves){
 		this.toMove = toMove;
 		this.moves = moves;
 	}
 
 	public char getPlayer(){ return toMove; }
 
-	public HashMap<MyVector,LinkedList<MyVector>> getMoves(){ return moves; }
+	public HashMap<MyVector,HashSet<MyVector>> getMoves(){ return moves; }
 }//State

@@ -10,6 +10,7 @@ import it.unibo.ai.didattica.competition.tablut.player.QueryPlayer;
 import it.unibo.ai.didattica.competition.tablut.util.MyVector;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedList;
 
 public class GameTablut extends Game{
@@ -20,7 +21,7 @@ public class GameTablut extends Game{
     }
 
     @Override
-    public HashMap<MyVector,LinkedList<MyVector>> actions(char player) {
+    public HashMap<MyVector, HashSet<MyVector>> actions(char player) {
         return bm.getPossibleMoves(player);
     }//actions
 
@@ -43,14 +44,12 @@ public class GameTablut extends Game{
     }
 
     @Override
-    public int terminalTest(GameState state) {
+    public int terminalTest(GameState state, char player) {
         //The next player checks if state is terminal, so B & W win conditions are inverted
-        if(state.getPlayer() == BoardManager.W) {
-            if (bm.kingWasCaptured()){
-                return Integer.MIN_VALUE;
-            }
-        }
-        else if(bm.kingEscapes() || bm.allPawnsCaptured()) return Integer.MAX_VALUE;
+        if( bm.kingWasCaptured() && player==BoardManager.B ) return 100_000;
+        if( bm.kingWasCaptured() && player==BoardManager.W ) return -100_000;
+        if( (bm.kingEscapes() || bm.allPawnsCaptured()) && player==BoardManager.B ) return -100_000;
+        if( (bm.kingEscapes() || bm.allPawnsCaptured()) && player==BoardManager.W ) return 100_000;
 
         return 0;
     }//terminalTest
@@ -63,9 +62,9 @@ public class GameTablut extends Game{
     public static void main(String[] args) {
         GameTablut tablut = new GameTablut(new GameState(BoardManager.W,BoardManager.getInstance().getPossibleMoves(BoardManager.W)));
         int maxDepth = 4;
-        Player p1 = new AlphaBetaCutoffPlayer(tablut, tablut.histCmdHandler,maxDepth);
-        Player p2 = new QueryPlayer();
-        //Player p2 = new AlphaBetaCutoffPlayer(tablut, tablut.histCmdHandler,maxDepth);
+        Player p1 = new AlphaBetaCutoffPlayer(tablut, tablut.histCmdHandler,maxDepth, BoardManager.W);
+        //Player p2 = new QueryPlayer();
+        Player p2 = new AlphaBetaCutoffPlayer(tablut, tablut.histCmdHandler,maxDepth, BoardManager.B);
         //Player p1 = new AlphaBetaPlayer(tablut, tablut.histCmdHandler);
         //Player p2 = new AlphaBetaPlayer(tablut, tablut.histCmdHandler);
         tablut.play(p1,p2);
