@@ -11,7 +11,6 @@ import it.unibo.ai.didattica.competition.tablut.util.MyVector;
 
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.LinkedList;
 
 public class GameTablut extends Game{
     public GameTablut(GameState initial){
