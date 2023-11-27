@@ -513,7 +513,7 @@ public class BoardManager
                     if( citadels.contains(new MyVector(i,j)) && currentPlayer == B ){
                         int l = i-1;
                         while( l > -1 && (i!=4 || l!=4) && board[l][j] == E ){
-                            if( i!=1 && l==0) break;
+                            if( i==8 && (j==3 || j==5) && l==0) break;
                             if( !moves.contains(new MyVector(l,j)) )
                                 moves.add(new MyVector(l,j));
                             l--;
@@ -521,7 +521,7 @@ public class BoardManager
 
                         l = i+1;
                         while( l < 9 && (l!=4 || j!=4) && board[l][j] == E ){
-                            if( i!=7 && l==8) break;
+                            if( i==0 && (j==3 || j==5) && l==8) break;
                             if( !moves.contains(new MyVector(l,j)) )
                                 moves.add(new MyVector(l,j));
                             l++;
@@ -529,7 +529,7 @@ public class BoardManager
 
                         l = j-1;
                         while( l > -1 && (i!=4 || l!=4) && board[i][l] == E ){
-                            if( j!=1 && l==0) break;
+                            if( j==8 && (i==3 || i==5) && l==0) break;
                             if( !moves.contains(new MyVector(i,l)) )
                                 moves.add(new MyVector(i,l));
                             l--;
@@ -537,7 +537,7 @@ public class BoardManager
 
                         l = j+1;
                         while( l < 9 && (i!=4 || l!=4) && board[i][l] == E ){
-                            if( j!=7 && l==8) break;
+                            if( j==0 && (i==3 || i==5) && l==8) break;
                             if( !moves.contains(new MyVector(i,l)) )
                                 moves.add(new MyVector(i,l));
                             l++;

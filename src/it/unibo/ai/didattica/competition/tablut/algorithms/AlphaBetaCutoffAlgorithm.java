@@ -8,14 +8,11 @@ import it.unibo.ai.didattica.competition.tablut.game.MoveHistory;
 import it.unibo.ai.didattica.competition.tablut.util.Heuristics;
 import it.unibo.ai.didattica.competition.tablut.util.MyVector;
 
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.LinkedList;
 import java.util.Map;
 
 public class AlphaBetaCutoffAlgorithm extends AbstractAlgorithms{
     private final int D;
-    private final BoardManager bm;
     private final Heuristics heuristics;
     private long startingTime;
 
@@ -35,11 +32,11 @@ public class AlphaBetaCutoffAlgorithm extends AbstractAlgorithms{
 
     private int bestDepth = Integer.MAX_VALUE;
     private int curDepth = Integer.MAX_VALUE;
+    private int n_moves = 0;
 
     public AlphaBetaCutoffAlgorithm(Game game, HistoryCommandHandler handler, int maxDepth, char player) {
         super(game, handler);
         D = maxDepth;
-        bm = BoardManager.getInstance();
         heuristics = new Heuristics();
         this.myPlayer = player;
     }
@@ -50,7 +47,6 @@ public class AlphaBetaCutoffAlgorithm extends AbstractAlgorithms{
                                     char player) {
         super(game, handler);
         D = maxDepth;
-        bm = BoardManager.getInstance();
         heuristics = new Heuristics();
 
         WHITE_WEIGHTS = whiteWeights;
@@ -95,25 +91,34 @@ public class AlphaBetaCutoffAlgorithm extends AbstractAlgorithms{
         }
 
         System.out.println(v);
+        System.out.println(n_moves);
 
         return bestAction;
     }//alphaBetaSearch
 
     private float maxValue(GameState state, float alpha, float beta, int depth ){
+
+        //TERMINAL TEST STARTS
         int utility = game.terminalTest(state, myPlayer);
         if( utility != 0 ){
-            if( utility > 0 ) curDepth = depth;
+            curDepth = depth;
+            n_moves++;
             return utility;
         }
-        if( depth > D ) return eval(state);
+        if( depth > D ){
+            n_moves++;
+            return eval(state);
+        }
 
         if( (System.currentTimeMillis()-startingTime)/1000 > TIME_TRESHOLD )
             return eval(state);
+        //TERMINAL TEST ENDS
 
         float v = Integer.MIN_VALUE;
         for(Map.Entry<MyVector, HashSet<MyVector>> entry : state.getMoves().entrySet() ){
             MyVector from = entry.getKey();
             for(MyVector to : entry.getValue() ) {
+                n_moves++;
                 //Loop avoidance
                 if( MoveHistory.getInstance().loopMove(from, to) ) continue;
 
@@ -127,19 +132,27 @@ public class AlphaBetaCutoffAlgorithm extends AbstractAlgorithms{
     }//maxValue
 
     private float minValue(GameState state, float alpha, float beta, int depth){
+
+        //TERMINAL TEST STARTS
         int utility = game.terminalTest(state, myPlayer);
         if( utility != 0 ){
-            if( utility > 0 ) curDepth = depth;
+            curDepth = depth;
+            n_moves++;
             return utility;
         }
-        if( depth > D ) return eval(state);
+        if( depth > D ){
+            n_moves++;
+            return eval(state);
+        }
 
         if( (System.currentTimeMillis()-startingTime)/1000 > TIME_TRESHOLD ) return eval(state);
+        //TERMINAL TEST ENDS
 
         float v = Integer.MAX_VALUE;
         for(Map.Entry<MyVector, HashSet<MyVector>> entry : state.getMoves().entrySet() ){
             MyVector from = entry.getKey();
             for(MyVector to : entry.getValue() ) {
+                n_moves++;
                 //Loop avoidance
                 if( MoveHistory.getInstance().loopMove(from, to) ) continue;
 

@@ -202,7 +202,7 @@ public class Testing {
     private static void testCitadelsMoves(){
         /*
         Throne neighborhood configuration:
-            . C C B .
+            . C B C .
             . . C . .
             . . . . .
 
@@ -212,8 +212,8 @@ public class Testing {
         //configuration
         char[][] board = BoardManager.getInstance().getBoard();
         board[0][3] = BoardManager.E;
-        board[0][4] = BoardManager.E;
-        board[0][5] = BoardManager.B;
+        board[0][4] = BoardManager.B;
+        board[0][5] = BoardManager.E;
 
         //Black move
         System.out.println(BoardManager.getInstance());
@@ -319,7 +319,7 @@ public class Testing {
         //testGeneralKingCapture(); OK!
         //testCitadelKingCapture(); OK!
         //testDoAndUndo();
-        //testCitadelsMoves();
-        printTuningResults();
+        testCitadelsMoves();
+        //printTuningResults();
     }//main
 }//Testing

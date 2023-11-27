@@ -29,10 +29,6 @@ public class GameTablut extends Game{
         char currentPlayer = state.getPlayer();
         histCmdHandler.handle(new ActionCommand(from,to,currentPlayer));
 
-        if( bm.illegalState() ){
-            System.exit(-1);
-        }
-
         char nextPlayer = currentPlayer == BoardManager.B ? BoardManager.W : BoardManager.B;
         return new GameState(nextPlayer, actions(nextPlayer));
     }//result
@@ -45,10 +41,17 @@ public class GameTablut extends Game{
     @Override
     public int terminalTest(GameState state, char player) {
         //The next player checks if state is terminal, so B & W win conditions are inverted
-        if( bm.kingWasCaptured() && player==BoardManager.B ) return 100_000;
-        if( bm.kingWasCaptured() && player==BoardManager.W ) return -100_000;
-        if( (bm.kingEscapes() || bm.allPawnsCaptured()) && player==BoardManager.B ) return -100_000;
-        if( (bm.kingEscapes() || bm.allPawnsCaptured()) && player==BoardManager.W ) return 100_000;
+        boolean isKingCaptured = bm.kingWasCaptured();
+        boolean isKingEscaped = bm.kingEscapes();
+
+        if( isKingCaptured ){
+            if( player==BoardManager.B ) return 100_000;
+            else return -100_000;
+        }
+        if( isKingEscaped ){
+            if( player==BoardManager.B ) return -100_000;
+            else return 100_000;
+        }
 
         return 0;
     }//terminalTest
