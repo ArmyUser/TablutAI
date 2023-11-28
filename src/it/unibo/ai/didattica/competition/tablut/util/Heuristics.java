@@ -48,7 +48,7 @@ public class Heuristics {
         if( k == 0 ){
             safety += safetyCoefficient;
             escapeValue += ESCAPE_COEFFICIENT;
-        }else if(board[k][j] == BoardManager.W){
+        }else if(k>-1 && board[k][j] == BoardManager.W){
             safety += safetyCoefficient;
         }
 
@@ -58,7 +58,7 @@ public class Heuristics {
         if( k == 8 ){
             safety += safetyCoefficient;
             escapeValue += ESCAPE_COEFFICIENT;
-        }else if(board[k][j] == BoardManager.W){
+        }else if(k<9 && board[k][j] == BoardManager.W){
             safety += safetyCoefficient;
         }
 
@@ -68,7 +68,7 @@ public class Heuristics {
         if( k == 8 ){
             safety += safetyCoefficient;
             escapeValue += ESCAPE_COEFFICIENT;
-        }else if(board[i][k] == BoardManager.W){
+        }else if(k<9 && board[i][k] == BoardManager.W){
             safety += safetyCoefficient;
         }
 
@@ -78,7 +78,7 @@ public class Heuristics {
         if( k == 0 ){
             safety += safetyCoefficient;
             escapeValue += ESCAPE_COEFFICIENT;
-        }else if(board[i][k] == BoardManager.W){
+        }else if(k>-1 && board[i][k] == BoardManager.W){
             safety += safetyCoefficient;
         }
 
@@ -88,8 +88,8 @@ public class Heuristics {
     public float[] computeKingSafetyAndEscapeValueForBlack(float safetyCoefficient, float ESCAPE_COEFFICIENT){
         char[][] board = bm.getBoard();
         HashSet<MyVector> citadels = bm.getCitadels();
-        float safety = 10;
-        float escapeValue = 10;
+        float safety = safetyCoefficient*4;
+        float escapeValue = ESCAPE_COEFFICIENT*4;
 
         int i = 0;
         int j = 0;
@@ -109,7 +109,7 @@ public class Heuristics {
         if( k == 0 ){
             safety -= safetyCoefficient;
             escapeValue -= ESCAPE_COEFFICIENT;
-        }else if(board[k][j] == BoardManager.W){
+        }else if(k>-1 && board[k][j] == BoardManager.W){
             safety -= safetyCoefficient;
         }
 
@@ -119,7 +119,7 @@ public class Heuristics {
         if( k == 8 ){
             safety -= safetyCoefficient;
             escapeValue -= ESCAPE_COEFFICIENT;
-        }else if(board[k][j] == BoardManager.W){
+        }else if(k<9 && board[k][j] == BoardManager.W){
             safety -= safetyCoefficient;
         }
 
@@ -129,7 +129,7 @@ public class Heuristics {
         if( k == 8 ){
             safety -= safetyCoefficient;
             escapeValue -= ESCAPE_COEFFICIENT;
-        }else if(board[i][k] == BoardManager.W){
+        }else if(k<9 && board[i][k] == BoardManager.W){
             safety -= safetyCoefficient;
         }
 
@@ -139,7 +139,7 @@ public class Heuristics {
         if( k == 0 ){
             safety -= safetyCoefficient;
             escapeValue -= ESCAPE_COEFFICIENT;
-        }else if(board[i][k] == BoardManager.W){
+        }else if(k >-1 && board[i][k] == BoardManager.W){
             safety -= safetyCoefficient;
         }
 
@@ -148,7 +148,7 @@ public class Heuristics {
 
     public float getBridgeWhiteValue(float bridgeCoefficient){
         char[][] board = bm.getBoard();
-        float val = 10f;
+        float val = bridgeCoefficient*4;
 
         //if( board[4][4] == BoardManager.K ) bridgeCoefficient = 0.3f;
 

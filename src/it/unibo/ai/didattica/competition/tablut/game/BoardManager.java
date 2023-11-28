@@ -570,7 +570,14 @@ public class BoardManager
     }//kingReachesJolly
 
     public boolean kingWasCaptured() {
-        return isKingCaptured;
+        /*
+        if( isKingCaptured ){
+            isKingCaptured = false;
+            return true;
+        }
+        return false;
+        */
+         return isKingCaptured;
     }//kingWasCaptured
 
     public boolean kingWasEscaped(){ return isKingEscaped; }

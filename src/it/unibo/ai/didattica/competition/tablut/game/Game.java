@@ -49,7 +49,8 @@ public abstract class Game
                 if( terminalTest(state, BoardManager.B) != 0 ){
                     System.out.println("Final board");
                     display();
-                    return terminalTest(state, BoardManager.B) > 0; //If so white wins
+                    System.out.println("Number of turns: "+t);
+                    return terminalTest(state, BoardManager.W) > 0; //If so white wins
                 }
             }
             t ++;

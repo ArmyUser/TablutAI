@@ -319,7 +319,7 @@ public class Testing {
         //testGeneralKingCapture(); OK!
         //testCitadelKingCapture(); OK!
         //testDoAndUndo();
-        testCitadelsMoves();
-        //printTuningResults();
+        //testCitadelsMoves();
+        printTuningResults();
     }//main
 }//Testing

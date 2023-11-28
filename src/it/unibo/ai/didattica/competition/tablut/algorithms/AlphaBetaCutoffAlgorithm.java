@@ -14,15 +14,15 @@ import java.util.Map;
 public class AlphaBetaCutoffAlgorithm extends AbstractAlgorithms{
     private final int D;
     private final Heuristics heuristics;
+    private final BoardManager bm;
     private long startingTime;
 
-    //HYPERPARAMETERS
+    //HYPERPARAMETERS 1 sum
     private float WHITE_WEIGHTS = 2;
-    private float H1_WEIGHT = 50f; //#PAWNS
-    private float H2_WEIGHT = 50f; //SAFETY
-    private float H3_WEIGHT = 25f; //ESCAPE
-    private float H4_WEIGHT = 2.5f; //BRIDGE
-    private float KING_CAPTURED_WEIGHT = 30f;
+    private float PAWNS_NUMBER_WEIGHT = 50f; //#PAWNS
+    private float KING_SAFETY_WEIGHT = 50f; //SAFETY
+    private float KING_ESCAPE_WEIGHT = 25f; //ESCAPE
+    private float BRIDGE_WEIGHT = 2.5f; //BRIDGE
     private float ESCAPE_COEFFICIENT = 1f;
     private float BRIDGE_COEFFICIENT = 2.5f;
     private float SAFETY_COEFFICIENT = 2.5f;
@@ -39,6 +39,7 @@ public class AlphaBetaCutoffAlgorithm extends AbstractAlgorithms{
         D = maxDepth;
         heuristics = new Heuristics();
         this.myPlayer = player;
+        bm = BoardManager.getInstance();
     }
 
     public AlphaBetaCutoffAlgorithm(Game game, HistoryCommandHandler handler, int maxDepth, float whiteWeights,
@@ -50,19 +51,19 @@ public class AlphaBetaCutoffAlgorithm extends AbstractAlgorithms{
         heuristics = new Heuristics();
 
         WHITE_WEIGHTS = whiteWeights;
-        H1_WEIGHT = h1Wheight;
-        H2_WEIGHT = h2Wheight;
-        H3_WEIGHT = h3Wheight;
-        H4_WEIGHT = h4Wheight;
+        PAWNS_NUMBER_WEIGHT = h1Wheight;
+        KING_SAFETY_WEIGHT = h2Wheight;
+        KING_ESCAPE_WEIGHT = h3Wheight;
+        BRIDGE_WEIGHT = h4Wheight;
         ESCAPE_COEFFICIENT = escapeCoefficient;
         BRIDGE_COEFFICIENT = bridgeCoefficient;
         SAFETY_COEFFICIENT = safetyCoefficient;
         this.myPlayer = player;
+        bm = BoardManager.getInstance();
     }
 
     public MyVector[] searchForBestAction(GameState state ){
         startingTime = System.currentTimeMillis();
-        player = state.getPlayer();
         float alpha = Integer.MIN_VALUE;
         float beta = Integer.MAX_VALUE;
         MyVector[] bestAction = new MyVector[2];
@@ -90,7 +91,7 @@ public class AlphaBetaCutoffAlgorithm extends AbstractAlgorithms{
             }
         }
 
-        System.out.println(v);
+        System.out.println(alpha);
         System.out.println(n_moves);
 
         return bestAction;
@@ -168,14 +169,45 @@ public class AlphaBetaCutoffAlgorithm extends AbstractAlgorithms{
     private float eval(GameState state) {
         float bBridgePosition, wBridgePosition;
         float[] bKingSafety_escapeValue, wKingSafety_escapeValue;
+        float bH1 = 0, wH1 = 0;
 
         //HEURISTIC 1 (WHITE AND BLACK PAWNS NUMBER )
         MyVector counts = heuristics.getNumberOfPawns(); //wCount, bCount
         float wCount = counts.x * WHITE_WEIGHTS;
         float bCount = counts.y;
 
-        float bH1 = bCount / wCount;
-        float wH1 = wCount / bCount;
+        //Terminal test
+        if( bCount == 0 ){
+            if( myPlayer == BoardManager.B ) return -100_000;
+            else return 100_000;
+        }
+        else if( wCount == 0 ){
+            if( myPlayer == BoardManager.W ) return -100_000;
+        }
+        else{
+            bH1 = bCount / wCount;
+            wH1 = wCount / bCount;
+        }
+
+        if( bm.getPawn(4,4) == BoardManager.K ){
+            PAWNS_NUMBER_WEIGHT = 0.3f;
+            BRIDGE_WEIGHT = 0.25f;
+            BRIDGE_COEFFICIENT = 0.15f;
+            KING_SAFETY_WEIGHT = 0.1f;
+            KING_ESCAPE_WEIGHT = 0.05f;
+            ESCAPE_COEFFICIENT = 0.05f;
+            SAFETY_COEFFICIENT = 0.1f;
+        }
+        else{
+            PAWNS_NUMBER_WEIGHT = 0.15f;
+            BRIDGE_WEIGHT = 0.15f;
+            BRIDGE_COEFFICIENT = 0.1f;
+            KING_SAFETY_WEIGHT = 0.2f;
+            KING_ESCAPE_WEIGHT = 0.2f;
+            ESCAPE_COEFFICIENT = 0.1f;
+            SAFETY_COEFFICIENT = 0.1f;
+        }
+
 
 
         //HEURISTIC 2_3 (KING SAFETY AND ESCAPE VALUE)
@@ -186,20 +218,24 @@ public class AlphaBetaCutoffAlgorithm extends AbstractAlgorithms{
         bBridgePosition = heuristics.getBridgeBlackValue(BRIDGE_COEFFICIENT);
         wBridgePosition = heuristics.getBridgeWhiteValue(BRIDGE_COEFFICIENT);
 
-        float bh = H1_WEIGHT*bH1 + H2_WEIGHT*bKingSafety_escapeValue[0]
-                + H3_WEIGHT*bKingSafety_escapeValue[1] + H4_WEIGHT*bBridgePosition;
+        float bh = PAWNS_NUMBER_WEIGHT *bH1 + KING_SAFETY_WEIGHT *bKingSafety_escapeValue[0]
+                + KING_ESCAPE_WEIGHT *bKingSafety_escapeValue[1] + BRIDGE_WEIGHT *bBridgePosition;
 
-        float wh = H1_WEIGHT*wH1 + H2_WEIGHT*wKingSafety_escapeValue[0]
-                + H3_WEIGHT*wKingSafety_escapeValue[1] + H4_WEIGHT*wBridgePosition;
+        float wh = PAWNS_NUMBER_WEIGHT *wH1 + KING_SAFETY_WEIGHT *wKingSafety_escapeValue[0]
+                + KING_ESCAPE_WEIGHT *wKingSafety_escapeValue[1] + BRIDGE_WEIGHT *wBridgePosition;
 
+        /*
         if( state.getPlayer() == myPlayer ){
             if( myPlayer == BoardManager.B ) return -wh;
             else return -bh;
         }
         else{
             if( myPlayer == BoardManager.B ) return bh;
-            return wh;
+            else return wh;
         }
+        */
+        if( myPlayer == BoardManager.B ) return bh;
+        else return wh;
     }//eval
 
     // we set a fixed depth limit "d" so that CUTOFF-TEST(state, depth) returns true for all depth greater than
