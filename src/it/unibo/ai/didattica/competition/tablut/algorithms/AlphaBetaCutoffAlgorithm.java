@@ -19,13 +19,13 @@ public class AlphaBetaCutoffAlgorithm extends AbstractAlgorithms{
 
     //HYPERPARAMETERS 1 sum
     private float WHITE_WEIGHTS = 2;
-    private float PAWNS_NUMBER_WEIGHT = 50f; //#PAWNS
-    private float KING_SAFETY_WEIGHT = 50f; //SAFETY
-    private float KING_ESCAPE_WEIGHT = 25f; //ESCAPE
-    private float BRIDGE_WEIGHT = 2.5f; //BRIDGE
+    private float PAWNS_NUMBER_WEIGHT = 2f;
+    private float KING_SAFETY_WEIGHT = 2f;
+    private float KING_ESCAPE_WEIGHT = 1.5f;
+    private float BRIDGE_WEIGHT = 2f;
     private float ESCAPE_COEFFICIENT = 1f;
-    private float BRIDGE_COEFFICIENT = 2.5f;
-    private float SAFETY_COEFFICIENT = 2.5f;
+    private float BRIDGE_COEFFICIENT = .5f;
+    private float SAFETY_COEFFICIENT = 1f;
 
     private final int TIME_TRESHOLD = 50;
     private final char myPlayer;
@@ -68,6 +68,8 @@ public class AlphaBetaCutoffAlgorithm extends AbstractAlgorithms{
         float beta = Integer.MAX_VALUE;
         MyVector[] bestAction = new MyVector[2];
         float v = 0;
+        n_moves = 0;
+
         bestDepth = Integer.MAX_VALUE;
         curDepth = Integer.MAX_VALUE;
 
@@ -108,11 +110,11 @@ public class AlphaBetaCutoffAlgorithm extends AbstractAlgorithms{
         }
         if( depth > D ){
             n_moves++;
-            return eval(state);
+            return eval();
         }
 
         if( (System.currentTimeMillis()-startingTime)/1000 > TIME_TRESHOLD )
-            return eval(state);
+            return eval();
         //TERMINAL TEST ENDS
 
         float v = Integer.MIN_VALUE;
@@ -143,10 +145,10 @@ public class AlphaBetaCutoffAlgorithm extends AbstractAlgorithms{
         }
         if( depth > D ){
             n_moves++;
-            return eval(state);
+            return eval();
         }
 
-        if( (System.currentTimeMillis()-startingTime)/1000 > TIME_TRESHOLD ) return eval(state);
+        if( (System.currentTimeMillis()-startingTime)/1000 > TIME_TRESHOLD ) return eval();
         //TERMINAL TEST ENDS
 
         float v = Integer.MAX_VALUE;
@@ -166,7 +168,7 @@ public class AlphaBetaCutoffAlgorithm extends AbstractAlgorithms{
         return v;
     }//minValue
 
-    private float eval(GameState state) {
+    private float eval() {
         float bBridgePosition, wBridgePosition;
         float[] bKingSafety_escapeValue, wKingSafety_escapeValue;
         float bH1 = 0, wH1 = 0;
@@ -185,27 +187,27 @@ public class AlphaBetaCutoffAlgorithm extends AbstractAlgorithms{
             if( myPlayer == BoardManager.W ) return -100_000;
         }
         else{
-            bH1 = bCount / wCount;
-            wH1 = wCount / bCount;
+            bH1 = bCount / wCount; //max approaches 6
+            wH1 = wCount / bCount; //max approaches 6
         }
 
         if( bm.getPawn(4,4) == BoardManager.K ){
-            PAWNS_NUMBER_WEIGHT = 0.3f;
-            BRIDGE_WEIGHT = 0.25f;
-            BRIDGE_COEFFICIENT = 0.15f;
-            KING_SAFETY_WEIGHT = 0.1f;
-            KING_ESCAPE_WEIGHT = 0.05f;
-            ESCAPE_COEFFICIENT = 0.05f;
-            SAFETY_COEFFICIENT = 0.1f;
+            PAWNS_NUMBER_WEIGHT = 3f;
+            BRIDGE_WEIGHT = 3f;
+            BRIDGE_COEFFICIENT = 1f;
+            KING_SAFETY_WEIGHT = .5f;
+            KING_ESCAPE_WEIGHT = 1f;
+            ESCAPE_COEFFICIENT = 1f;
+            SAFETY_COEFFICIENT = .5f;
         }
         else{
-            PAWNS_NUMBER_WEIGHT = 0.15f;
-            BRIDGE_WEIGHT = 0.15f;
-            BRIDGE_COEFFICIENT = 0.1f;
-            KING_SAFETY_WEIGHT = 0.2f;
-            KING_ESCAPE_WEIGHT = 0.2f;
-            ESCAPE_COEFFICIENT = 0.1f;
-            SAFETY_COEFFICIENT = 0.1f;
+            PAWNS_NUMBER_WEIGHT = 2f;
+            BRIDGE_WEIGHT = 2f;
+            BRIDGE_COEFFICIENT = .5f;
+            KING_SAFETY_WEIGHT = 2f;
+            KING_ESCAPE_WEIGHT = 1.5f;
+            ESCAPE_COEFFICIENT = 1f;
+            SAFETY_COEFFICIENT = 1f;
         }
 
 

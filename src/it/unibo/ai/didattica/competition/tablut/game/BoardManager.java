@@ -512,7 +512,7 @@ public class BoardManager
                     //If the black pawn is inside a citadel
                     if( citadels.contains(new MyVector(i,j)) && currentPlayer == B ){
                         int l = i-1;
-                        while( l > -1 && (i!=4 || l!=4) && board[l][j] == E ){
+                        while( l > -1 && (l!=4 || j!=4) && board[l][j] == E ){
                             if( i==8 && (j==3 || j==5) && l==0) break;
                             if( !moves.contains(new MyVector(l,j)) )
                                 moves.add(new MyVector(l,j));

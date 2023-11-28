@@ -1,7 +1,11 @@
 package it.unibo.ai.didattica.competition.tablut.util;
 
+import java.util.Random;
+
 public class MyVector {
     public int x,y;
+    private static int h1,h2;
+
     public MyVector(int x, int y){
         this.x = x;
         this.y = y;
@@ -30,6 +34,12 @@ public class MyVector {
 
     @Override
     public int hashCode(){
-        return (x*43+y*43)*71;
+        return (x*h1+y*h1)*h2;
     }//hashCode
+
+    public static void initHash(){
+        Random rand = new Random();
+        h1 = rand.nextInt(10_000);
+        h2 = rand.nextInt(10_000);
+    }
 }//MyVector

@@ -62,6 +62,9 @@ public class GameTablut extends Game{
     }
 
     public static void main(String[] args) {
+        //In order to get different move ordering each new match
+        MyVector.initHash();
+
         GameTablut tablut = new GameTablut(new GameState(BoardManager.W,BoardManager.getInstance().getPossibleMoves(BoardManager.W)));
         int maxDepth = 4;
         Player p1 = new AlphaBetaCutoffPlayer(tablut, tablut.histCmdHandler,maxDepth, BoardManager.W);
