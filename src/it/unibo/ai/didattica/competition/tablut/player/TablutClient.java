@@ -12,6 +12,7 @@ import com.google.gson.Gson;
 import it.unibo.ai.didattica.competition.tablut.domain.Action;
 import it.unibo.ai.didattica.competition.tablut.domain.GameState;
 import it.unibo.ai.didattica.competition.tablut.domain.State;
+import it.unibo.ai.didattica.competition.tablut.domain.StateTablut;
 import it.unibo.ai.didattica.competition.tablut.game.BoardManager;
 import it.unibo.ai.didattica.competition.tablut.util.Configuration;
 import it.unibo.ai.didattica.competition.tablut.util.StreamUtils;
@@ -158,6 +159,6 @@ public abstract class TablutClient implements Runnable {
 	 * Read the state from the server
 	 */
 	public void read() throws ClassNotFoundException, IOException {
-		currentState = this.gson.fromJson(StreamUtils.readString(in), State.class);
+		currentState = this.gson.fromJson(StreamUtils.readString(in), StateTablut.class);
 	}
 }
