@@ -224,6 +224,7 @@ public class Testing {
         }
     }//testCitadelsMoves
 
+    /*
     private static boolean exec(float whiteWeights, float h1Wheight, float h2Wheight,
                                float h3Wheight, float h4Wheight, float escapeCoefficient,
                                 float bridgeCoefficient, float safetyCoefficient){
@@ -312,6 +313,7 @@ public class Testing {
 
         System.out.println("\n\n\n");
     }//printTuningResult
+     */
 
     public static void main(String[] args) {
         //testThroneKingCapture(); OK!
@@ -320,6 +322,5 @@ public class Testing {
         //testCitadelKingCapture(); OK!
         //testDoAndUndo();
         //testCitadelsMoves();
-        printTuningResults();
     }//main
 }//Testing

@@ -4,11 +4,14 @@ import it.unibo.ai.didattica.competition.tablut.algorithms.AbstractAlgorithms;
 import it.unibo.ai.didattica.competition.tablut.domain.GameState;
 import it.unibo.ai.didattica.competition.tablut.util.MyVector;
 
+import java.io.IOException;
+import java.net.UnknownHostException;
 
-public abstract class AIPlayer implements Player {
-    private final AbstractAlgorithms algorithm;
+public abstract class OnlinePlayer extends TablutClient implements Player{
+    protected AbstractAlgorithms algorithm;
 
-    protected AIPlayer(AbstractAlgorithms algorithm) {
+    protected OnlinePlayer(AbstractAlgorithms algorithm, String player, String name, int timeout, String ipAddress) throws UnknownHostException, IOException {
+        super(player, name, timeout, ipAddress);
         this.algorithm = algorithm;
     }
 
@@ -19,4 +22,4 @@ public abstract class AIPlayer implements Player {
         System.out.println("Time spent for the move: "+(System.currentTimeMillis()-startingTime)/1000+"s");
         return move;
     }//getNextAction
-}//Player
+}//OnlinePlayer

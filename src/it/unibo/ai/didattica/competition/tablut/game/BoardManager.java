@@ -1,5 +1,6 @@
 package it.unibo.ai.didattica.competition.tablut.game;
 
+import it.unibo.ai.didattica.competition.tablut.domain.State;
 import it.unibo.ai.didattica.competition.tablut.util.MyVector;
 
 import java.util.*;
@@ -183,6 +184,18 @@ public class BoardManager
 
     public void setBoard(char[][] board) {
         this.board = board;
+    }//setBoard
+
+    public void setBoard(State state){
+        String boardLinearString = state.toLinearString();
+        int k = 0;
+
+        for( int i=0; i<board.length; i++ ){
+            for (int j = 0; j < board.length; j++) {
+                board[i][j] = boardLinearString.charAt(k);
+                k++;
+            }
+        }
     }//setBoard
 
     public char getTurn() {

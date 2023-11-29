@@ -27,21 +27,24 @@ public class AlphaBetaCutoffAlgorithm extends AbstractAlgorithms{
     private float BRIDGE_COEFFICIENT = .5f;
     private float SAFETY_COEFFICIENT = 1f;
 
-    private final int TIME_TRESHOLD = 50;
+    private final int timeout;
     private final char myPlayer;
 
     private int bestDepth = Integer.MAX_VALUE;
     private int curDepth = Integer.MAX_VALUE;
     private int n_moves = 0;
 
-    public AlphaBetaCutoffAlgorithm(Game game, HistoryCommandHandler handler, int maxDepth, char player) {
+    public AlphaBetaCutoffAlgorithm(Game game, HistoryCommandHandler handler, int maxDepth, String player, int timeout) {
         super(game, handler);
         D = maxDepth;
+        this.timeout = timeout;
         heuristics = new Heuristics();
-        this.myPlayer = player;
+        if( player.equalsIgnoreCase("white") ) myPlayer = BoardManager.W;
+        else myPlayer = BoardManager.B;
         bm = BoardManager.getInstance();
     }
 
+    /*
     public AlphaBetaCutoffAlgorithm(Game game, HistoryCommandHandler handler, int maxDepth, float whiteWeights,
                                     float h1Wheight, float h2Wheight, float h3Wheight, float h4Wheight,
                                     float escapeCoefficient, float bridgeCoefficient, float safetyCoefficient,
@@ -61,6 +64,7 @@ public class AlphaBetaCutoffAlgorithm extends AbstractAlgorithms{
         this.myPlayer = player;
         bm = BoardManager.getInstance();
     }
+     */
 
     public MyVector[] searchForBestAction(GameState state ){
         startingTime = System.currentTimeMillis();
@@ -76,7 +80,7 @@ public class AlphaBetaCutoffAlgorithm extends AbstractAlgorithms{
         for(Map.Entry<MyVector, HashSet<MyVector>> entry : state.getMoves().entrySet() ){
             MyVector from = entry.getKey();
             for(MyVector to : entry.getValue() ){
-                if( (System.currentTimeMillis()-startingTime)/1000 > TIME_TRESHOLD ) return bestAction;
+                if( (System.currentTimeMillis()-startingTime)/1000 > timeout) return bestAction;
 
                 v = minValue(game.result(state,from,to), alpha, beta, 1);
                 handler.undo();
@@ -113,7 +117,7 @@ public class AlphaBetaCutoffAlgorithm extends AbstractAlgorithms{
             return eval();
         }
 
-        if( (System.currentTimeMillis()-startingTime)/1000 > TIME_TRESHOLD )
+        if( (System.currentTimeMillis()-startingTime)/1000 > timeout)
             return eval();
         //TERMINAL TEST ENDS
 
@@ -148,7 +152,7 @@ public class AlphaBetaCutoffAlgorithm extends AbstractAlgorithms{
             return eval();
         }
 
-        if( (System.currentTimeMillis()-startingTime)/1000 > TIME_TRESHOLD ) return eval();
+        if( (System.currentTimeMillis()-startingTime)/1000 > timeout) return eval();
         //TERMINAL TEST ENDS
 
         float v = Integer.MAX_VALUE;

@@ -67,9 +67,9 @@ public class GameTablut extends Game{
 
         GameTablut tablut = new GameTablut(new GameState(BoardManager.W,BoardManager.getInstance().getPossibleMoves(BoardManager.W)));
         int maxDepth = 4;
-        Player p1 = new AlphaBetaCutoffPlayer(tablut, tablut.histCmdHandler,maxDepth, BoardManager.W);
+        Player p1 = new AlphaBetaCutoffPlayer(tablut, tablut.histCmdHandler,maxDepth, "white",60);
         //Player p2 = new QueryPlayer();
-        Player p2 = new AlphaBetaCutoffPlayer(tablut, tablut.histCmdHandler,maxDepth, BoardManager.B);
+        Player p2 = new AlphaBetaCutoffPlayer(tablut, tablut.histCmdHandler,maxDepth, "black",60);
         //Player p1 = new AlphaBetaPlayer(tablut, tablut.histCmdHandler);
         //Player p2 = new AlphaBetaPlayer(tablut, tablut.histCmdHandler);
         tablut.play(p1,p2);
