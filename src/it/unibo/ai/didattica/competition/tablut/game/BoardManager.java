@@ -113,7 +113,6 @@ public class BoardManager
     }//resetBoard
 
     protected char board[][];
-    protected char turn;
 
     public char[][] getBoard() {
         return board;
@@ -156,9 +155,6 @@ public class BoardManager
         result.append("-");
         result.append("\n");
 
-        // TURN
-        result.append(turn);
-
         return result.toString();
     }//toString
 
@@ -169,7 +165,6 @@ public class BoardManager
         for (int i = 0; i < board.length; i++)
             for (int j = 0; j < board.length; j++)
                 result.append(board[i][j]);
-        result.append(turn);
 
         return result.toString();
     }//toLinearString
@@ -197,14 +192,6 @@ public class BoardManager
             }
         }
     }//setBoard
-
-    public char getTurn() {
-        return turn;
-    }//getTurn
-
-    public void setTurn(char turn) {
-        this.turn = turn;
-    }//setTurn
 
     public HashSet<MyVector> getEscapes(){ return escapes; }
 
@@ -408,7 +395,6 @@ public class BoardManager
         final int prime = 31;
         int result = 1;
         result = prime * result + ((this.board == null) ? 0 : deepHashCode(board));
-        result = prime * result + Character.hashCode(this.turn);
         return result;
     }//hashCode
 
@@ -438,7 +424,6 @@ public class BoardManager
                 newboard[i][j] = oldboard[i][j];
 
         result.setBoard(newboard);
-        result.setTurn(this.turn);
         return result;
     }//clone
 
@@ -467,8 +452,6 @@ public class BoardManager
                     if (this.board[i][j] != other.board[i][j])
                         return false;
         }
-        if (this.turn != other.turn)
-            return false;
         return true;
     }//equals
 

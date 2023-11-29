@@ -8,6 +8,7 @@ import it.unibo.ai.didattica.competition.tablut.game.MoveHistory;
 import it.unibo.ai.didattica.competition.tablut.util.Heuristics;
 import it.unibo.ai.didattica.competition.tablut.util.MyVector;
 
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 
@@ -16,6 +17,8 @@ public class AlphaBetaCutoffAlgorithm extends AbstractAlgorithms{
     private final Heuristics heuristics;
     private final BoardManager bm;
     private long startingTime;
+
+    private HashMap<Integer, Float> transpositionTable;
 
     //HYPERPARAMETERS 1 sum
     private float WHITE_WEIGHTS = 2;
@@ -42,6 +45,7 @@ public class AlphaBetaCutoffAlgorithm extends AbstractAlgorithms{
         if( player.equalsIgnoreCase("white") ) myPlayer = BoardManager.W;
         else myPlayer = BoardManager.B;
         bm = BoardManager.getInstance();
+        transpositionTable = new HashMap<>();
     }
 
     /*
@@ -114,6 +118,8 @@ public class AlphaBetaCutoffAlgorithm extends AbstractAlgorithms{
         }
         if( depth > D ){
             n_moves++;
+            int stateHashCode = bm.hashCode();
+            if(transpositionTable.containsKey(stateHashCode)) return transpositionTable.get(stateHashCode);
             return eval();
         }
 
@@ -149,6 +155,8 @@ public class AlphaBetaCutoffAlgorithm extends AbstractAlgorithms{
         }
         if( depth > D ){
             n_moves++;
+            int stateHashCode = bm.hashCode();
+            if(transpositionTable.containsKey(stateHashCode)) return transpositionTable.get(stateHashCode);
             return eval();
         }
 
@@ -240,8 +248,14 @@ public class AlphaBetaCutoffAlgorithm extends AbstractAlgorithms{
             else return wh;
         }
         */
-        if( myPlayer == BoardManager.B ) return bh;
-        else return wh;
+        if( myPlayer == BoardManager.B ){
+            transpositionTable.put(bm.hashCode(),bh);
+            return bh;
+        }
+        else{
+            transpositionTable.put(bm.hashCode(),wh);
+            return wh;
+        }
     }//eval
 
     // we set a fixed depth limit "d" so that CUTOFF-TEST(state, depth) returns true for all depth greater than
