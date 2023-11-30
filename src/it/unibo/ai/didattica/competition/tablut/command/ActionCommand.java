@@ -8,9 +8,9 @@ public class ActionCommand implements Command
 {
     private MyVector from, to;
     private LinkedList<MyVector> capturedPosition;
-    private char toMove;
+    private byte toMove;
 
-    public ActionCommand(MyVector from, MyVector to, char toMove){
+    public ActionCommand(MyVector from, MyVector to, byte toMove){
         this.from = from;
         this.to = to;
         this.toMove = toMove;
@@ -21,7 +21,7 @@ public class ActionCommand implements Command
     }//doIt
 
     public void undoIt(){
-        char opposite;
+        byte opposite;
         if( BoardManager.getInstance().kingWasCaptured() ) opposite = BoardManager.K;
         else opposite = toMove == BoardManager.W ? BoardManager.B : BoardManager.W;
 

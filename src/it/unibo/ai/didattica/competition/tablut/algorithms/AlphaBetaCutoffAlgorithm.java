@@ -18,8 +18,6 @@ public class AlphaBetaCutoffAlgorithm extends AbstractAlgorithms{
     private final BoardManager bm;
     private long startingTime;
 
-    private HashMap<Integer, Float> transpositionTable;
-
     //HYPERPARAMETERS 1 sum
     private float WHITE_WEIGHTS = 2;
     private float PAWNS_NUMBER_WEIGHT = 2f;
@@ -31,7 +29,7 @@ public class AlphaBetaCutoffAlgorithm extends AbstractAlgorithms{
     private float SAFETY_COEFFICIENT = 1f;
 
     private final int timeout;
-    private final char myPlayer;
+    private final byte myPlayer;
 
     private int bestDepth = Integer.MAX_VALUE;
     private int curDepth = Integer.MAX_VALUE;
@@ -45,7 +43,6 @@ public class AlphaBetaCutoffAlgorithm extends AbstractAlgorithms{
         if( player.equalsIgnoreCase("white") ) myPlayer = BoardManager.W;
         else myPlayer = BoardManager.B;
         bm = BoardManager.getInstance();
-        transpositionTable = new HashMap<>();
     }
 
     /*
@@ -108,18 +105,14 @@ public class AlphaBetaCutoffAlgorithm extends AbstractAlgorithms{
     }//alphaBetaSearch
 
     private float maxValue(GameState state, float alpha, float beta, int depth ){
-
+        n_moves++;
         //TERMINAL TEST STARTS
         int utility = game.terminalTest(state, myPlayer);
         if( utility != 0 ){
             curDepth = depth;
-            n_moves++;
             return utility;
         }
         if( depth > D ){
-            n_moves++;
-            int stateHashCode = bm.hashCode();
-            if(transpositionTable.containsKey(stateHashCode)) return transpositionTable.get(stateHashCode);
             return eval();
         }
 
@@ -145,18 +138,15 @@ public class AlphaBetaCutoffAlgorithm extends AbstractAlgorithms{
     }//maxValue
 
     private float minValue(GameState state, float alpha, float beta, int depth){
+        n_moves++;
 
         //TERMINAL TEST STARTS
         int utility = game.terminalTest(state, myPlayer);
         if( utility != 0 ){
             curDepth = depth;
-            n_moves++;
             return utility;
         }
         if( depth > D ){
-            n_moves++;
-            int stateHashCode = bm.hashCode();
-            if(transpositionTable.containsKey(stateHashCode)) return transpositionTable.get(stateHashCode);
             return eval();
         }
 
@@ -249,11 +239,9 @@ public class AlphaBetaCutoffAlgorithm extends AbstractAlgorithms{
         }
         */
         if( myPlayer == BoardManager.B ){
-            transpositionTable.put(bm.hashCode(),bh);
             return bh;
         }
         else{
-            transpositionTable.put(bm.hashCode(),wh);
             return wh;
         }
     }//eval

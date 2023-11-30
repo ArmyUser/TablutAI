@@ -25,7 +25,7 @@ public class Testing {
          */
 
         //Throne configuration
-        char[][] board = BoardManager.getInstance().getBoard();
+        byte[][] board = BoardManager.getInstance().getBoard();
         board[3][3] = BoardManager.E;
         board[3][4] = BoardManager.B;
         board[3][5] = BoardManager.E;
@@ -55,7 +55,7 @@ public class Testing {
          */
 
         //Throne configuration
-        char[][] board = BoardManager.getInstance().getBoard();
+        byte[][] board = BoardManager.getInstance().getBoard();
         board[3][4] = BoardManager.E;
         board[3][5] = BoardManager.B;
         board[3][6] = BoardManager.E;
@@ -86,7 +86,7 @@ public class Testing {
          */
 
         //Throne configuration
-        char[][] board = BoardManager.getInstance().getBoard();
+        byte[][] board = BoardManager.getInstance().getBoard();
         board[3][4] = BoardManager.E;
         board[3][5] = BoardManager.B;
         board[3][6] = BoardManager.E;
@@ -117,7 +117,7 @@ public class Testing {
          */
 
         //Throne configuration
-        char[][] board = BoardManager.getInstance().getBoard();
+        byte[][] board = BoardManager.getInstance().getBoard();
         board[3][4] = BoardManager.E;
         board[3][5] = BoardManager.B;
         board[3][6] = BoardManager.E;
@@ -148,7 +148,7 @@ public class Testing {
          */
 
         //Throne configuration
-        char[][] board = BoardManager.getInstance().getBoard();
+        byte[][] board = BoardManager.getInstance().getBoard();
         board[3][4] = BoardManager.E;
         board[3][5] = BoardManager.B;
         board[3][6] = BoardManager.E;
@@ -185,7 +185,7 @@ public class Testing {
          */
 
         //Throne configuration
-        char[][] board = BoardManager.getInstance().getBoard();
+        byte[][] board = BoardManager.getInstance().getBoard();
         board[1][1] = BoardManager.E;
         board[1][2] = BoardManager.K;
 
@@ -210,7 +210,7 @@ public class Testing {
          */
 
         //configuration
-        char[][] board = BoardManager.getInstance().getBoard();
+        byte[][] board = BoardManager.getInstance().getBoard();
         board[0][3] = BoardManager.E;
         board[0][4] = BoardManager.B;
         board[0][5] = BoardManager.E;

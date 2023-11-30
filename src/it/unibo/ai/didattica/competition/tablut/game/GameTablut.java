@@ -20,26 +20,26 @@ public class GameTablut extends Game{
     }
 
     @Override
-    public HashMap<MyVector, HashSet<MyVector>> actions(char player) {
+    public HashMap<MyVector, HashSet<MyVector>> actions(byte player) {
         return bm.getPossibleMoves(player);
     }//actions
 
     @Override
     public GameState result(GameState state, MyVector from, MyVector to) {
-        char currentPlayer = state.getPlayer();
+        byte currentPlayer = state.getPlayer();
         histCmdHandler.handle(new ActionCommand(from,to,currentPlayer));
 
-        char nextPlayer = currentPlayer == BoardManager.B ? BoardManager.W : BoardManager.B;
+        byte nextPlayer = currentPlayer == BoardManager.B ? BoardManager.W : BoardManager.B;
         return new GameState(nextPlayer, actions(nextPlayer));
     }//result
 
     @Override
-    public float utility(GameState state, char to_move) {
+    public float utility(GameState state, byte to_move) {
         return 0;
     }
 
     @Override
-    public int terminalTest(GameState state, char player) {
+    public int terminalTest(GameState state, byte player) {
         //The next player checks if state is terminal, so B & W win conditions are inverted
         boolean isKingCaptured = bm.kingWasCaptured();
         boolean isKingEscaped = bm.kingEscapes();
@@ -57,7 +57,7 @@ public class GameTablut extends Game{
     }//terminalTest
 
     @Override
-    public char toMove(GameState state) {
+    public byte toMove(GameState state) {
         return state.getPlayer();
     }
 

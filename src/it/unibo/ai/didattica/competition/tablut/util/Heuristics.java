@@ -13,7 +13,7 @@ public class Heuristics {
     }
 
     public MyVector getNumberOfPawns() {
-        char[][] board = bm.getBoard();
+        byte[][] board = bm.getBoard();
 
         int wCount = 0;
         int bCount = 0;
@@ -25,7 +25,7 @@ public class Heuristics {
     }//getNumberOfPawns
 
     public float[] computeKingSafetyAndEscapeValueForWhite(float safetyCoefficient, float ESCAPE_COEFFICIENT){
-        char[][] board = bm.getBoard();
+        byte[][] board = bm.getBoard();
         HashSet<MyVector> citadels = bm.getCitadels();
         float safety = 0;
         float escapeValue = 0;
@@ -86,7 +86,7 @@ public class Heuristics {
     }//computeKingSafetyAndEscapeValueForWhite
 
     public float[] computeKingSafetyAndEscapeValueForBlack(float safetyCoefficient, float ESCAPE_COEFFICIENT){
-        char[][] board = bm.getBoard();
+        byte[][] board = bm.getBoard();
         HashSet<MyVector> citadels = bm.getCitadels();
         float safety = safetyCoefficient*4;
         float escapeValue = ESCAPE_COEFFICIENT*4;
@@ -147,7 +147,7 @@ public class Heuristics {
     }//computeKingSafetyAndEscapeValueForBlack
 
     public float getBridgeWhiteValue(float bridgeCoefficient){
-        char[][] board = bm.getBoard();
+        byte[][] board = bm.getBoard();
         float val = bridgeCoefficient*4;
 
         //if( board[4][4] == BoardManager.K ) bridgeCoefficient = 0.3f;
@@ -176,7 +176,7 @@ public class Heuristics {
     }//getBridgeConfig
 
     public float getBridgeBlackValue(float bridgeCoefficient){
-        char[][] board = bm.getBoard();
+        byte[][] board = bm.getBoard();
         float val = 0f;
 
         //if( board[4][4] == BoardManager.K ) bridgeCoefficient = 0.3f;

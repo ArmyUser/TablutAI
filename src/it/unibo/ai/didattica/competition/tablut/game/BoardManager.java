@@ -8,19 +8,17 @@ import java.util.*;
 public class BoardManager
 {
     private static BoardManager Instance;
+    protected byte board[][];
 
-    public static final char WW = '1';
-    public static final char BW = '0';
-    public static final char D = 'D';
 
     /**
      * Pawn represents the content of a box in the board
      */
-    public static final char W = 'W';
-    public static final char B = 'B';
-    public static final char E = 'E';
-    public static final char T = 'T';
-    public static final char K = 'K';
+    public static final byte W = (byte) 'W';
+    public static final byte B = (byte) 'B';
+    public static final byte E = (byte) 'E';
+    public static final byte T = (byte) 'T';
+    public static final byte K = (byte) 'K';
 
     private HashSet<MyVector> citadels;
     private HashSet<MyVector> escapes;
@@ -29,7 +27,7 @@ public class BoardManager
     private boolean isKingEscaped = false;
 
     private BoardManager(){
-        board = new char[9][9];
+        board = new byte[9][9];
         citadels = new HashSet<>();
         escapes = new HashSet<>();
 
@@ -112,9 +110,7 @@ public class BoardManager
         Instance = new BoardManager();
     }//resetBoard
 
-    protected char board[][];
-
-    public char[][] getBoard() {
+    public byte[][] getBoard() {
         return board;
     }
 
@@ -136,7 +132,7 @@ public class BoardManager
                     else if( citadels.contains(new MyVector(i,j)) ) result.append("■ ");
                     else result.append("□ ");
                 }
-                else result.append(board[i][j]+" ");
+                else result.append((char) board[i][j]+" ");
                 if (j == 8) result.append("\n");
 
             }
@@ -169,7 +165,7 @@ public class BoardManager
         return result.toString();
     }//toLinearString
 
-    public char getPawn(int row, int column) {
+    public byte getPawn(int row, int column) {
         return board[row][column];
     }//getPawn
 
@@ -177,7 +173,7 @@ public class BoardManager
         board[row][column] = E;
     }//removePawn
 
-    public void setBoard(char[][] board) {
+    public void setBoard(byte[][] board) {
         this.board = board;
     }//setBoard
 
@@ -187,7 +183,7 @@ public class BoardManager
 
         for( int i=0; i<board.length; i++ ){
             for (int j = 0; j < board.length; j++) {
-                board[i][j] = boardLinearString.charAt(k);
+                board[i][j] = (byte) boardLinearString.charAt(k); //?????????
                 k++;
             }
         }
@@ -195,13 +191,13 @@ public class BoardManager
 
     public HashSet<MyVector> getEscapes(){ return escapes; }
 
-    public LinkedList<MyVector> setPawn(MyVector from, MyVector to, char player){
+    public LinkedList<MyVector> setPawn(MyVector from, MyVector to, byte player){
         if( board[from.x][from.y] == K )
             player = K;
         removePawn(from.x, from.y);
         board[to.x][to.y] = player;
 
-        char opposite = W;
+        byte opposite = W;
         if( player == B ){
             LinkedList<MyVector> kingPos = captureKing(to);
             if( kingPos.size() > 0 ){
@@ -217,7 +213,7 @@ public class BoardManager
         return capture(to,player,opposite);
     }//setPawn
 
-    public void resetPawn(MyVector from, MyVector to, char player){
+    public void resetPawn(MyVector from, MyVector to, byte player){
         if( isKingEscaped ) {
             isKingEscaped = false;
             player = K;
@@ -232,7 +228,7 @@ public class BoardManager
         board[to.x][to.y] = player;
     }//resetPawn
 
-    public void respawnPawn(MyVector position, char color){
+    public void respawnPawn(MyVector position, byte color){
         if( color == K ){
             isKingEscaped = false;
             isKingCaptured = false;
@@ -241,9 +237,9 @@ public class BoardManager
             board[position.x][position.y] = color;
     }//respawnPawn
 
-    private LinkedList<MyVector> capture(MyVector to, char currentPlayer, char opposite){
+    private LinkedList<MyVector> capture(MyVector to, byte currentPlayer, byte opposite){
         LinkedList<MyVector> captured = new LinkedList<>();
-        char eventualKing = currentPlayer == W ? K : '.';
+        byte eventualKing = currentPlayer == W ? K : (byte) '.';
 
         //top capture
         if( to.x > 1 ){
@@ -398,7 +394,7 @@ public class BoardManager
         return result;
     }//hashCode
 
-    private static int deepHashCode(char[][] matrix) {
+    private static int deepHashCode(byte[][] matrix) {
         int tmp[] = new int[matrix.length];
         for (int i = 0; i < matrix.length; i++) {
             tmp[i] = Arrays.hashCode(matrix[i]);
@@ -416,8 +412,8 @@ public class BoardManager
     public BoardManager clone() {
         BoardManager result = new BoardManager();
 
-        char oldboard[][] = this.getBoard();
-        char newboard[][] = result.getBoard();
+        byte oldboard[][] = this.getBoard();
+        byte newboard[][] = result.getBoard();
 
         for (int i = 0; i < this.board.length; i++)
             for (int j = 0; j < this.board[i].length; j++)
@@ -455,11 +451,11 @@ public class BoardManager
         return true;
     }//equals
 
-    public HashMap<MyVector,HashSet<MyVector>> getPossibleMoves(char currentPlayer) {
+    public HashMap<MyVector,HashSet<MyVector>> getPossibleMoves(byte currentPlayer) {
         HashMap<MyVector,HashSet<MyVector>> res = new HashMap<>(); //Format: from position -> list of allowed positions
         MyVector thisPos;
 
-        char eventualKing = '.';
+        byte eventualKing = (byte) '.';
         if( currentPlayer == W ) eventualKing = K;
 
         for( int i=0; i < board.length; i++){

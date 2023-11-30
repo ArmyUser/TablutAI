@@ -15,15 +15,15 @@ public abstract class Game
     protected GameState initial;
     protected HistoryCommandHandler histCmdHandler;
     protected BoardManager bm;
-    public abstract HashMap<MyVector, HashSet<MyVector>> actions(char player);
+    public abstract HashMap<MyVector, HashSet<MyVector>> actions(byte player);
 
     public abstract GameState result(GameState state, MyVector from, MyVector to);
 
-    public abstract float utility(GameState state, char to_move);
+    public abstract float utility(GameState state, byte to_move);
 
-    public abstract int terminalTest(GameState state, char player);
+    public abstract int terminalTest(GameState state, byte player);
 
-    public abstract char toMove(GameState state);
+    public abstract byte toMove(GameState state);
 
     public void display(){
         System.out.println(bm.toString());
@@ -37,10 +37,10 @@ public abstract class Game
         while( true ){
             System.out.printf("----------Turn %d----------%n",t);
             for( Player p : players ){
-                System.out.printf("---> Player %s%n",state.getPlayer());
+                System.out.printf("---> Player %s%n",(char)state.getPlayer());
                 MyVector[] move = p.getNextAction(state);
-                state = result(state, move[0], move[1]);
                 MoveHistory.getInstance().insertMove(move[0], move[1]);
+                state = result(state, move[0], move[1]);
                 bm.printPawnNumber();
                 System.out.println("From: "+move[0]);
                 System.out.println("To: "+move[1]);

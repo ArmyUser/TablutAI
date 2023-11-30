@@ -14,15 +14,15 @@ import java.util.LinkedList;
  * and the turn
  */
 public class GameState {
-	private final char toMove;
+	private final byte toMove;
 	private final HashMap<MyVector, HashSet<MyVector>> moves;
 
-	public GameState(char toMove, HashMap<MyVector,HashSet<MyVector>> moves){
+	public GameState(byte toMove, HashMap<MyVector,HashSet<MyVector>> moves){
 		this.toMove = toMove;
 		this.moves = moves;
 	}
 
-	public char getPlayer(){ return toMove; }
+	public byte getPlayer(){ return toMove; }
 
 	public HashMap<MyVector,HashSet<MyVector>> getMoves(){ return moves; }
 }//State

@@ -22,7 +22,7 @@ import it.unibo.ai.didattica.competition.tablut.util.StreamUtils;
  */
 public abstract class TablutClient implements Runnable {
 
-	private char player;
+	private byte player;
 	private String name;
 	private Socket playerSocket;
 	private DataInputStream in;
@@ -32,11 +32,11 @@ public abstract class TablutClient implements Runnable {
 	private int timeout;
 	private String serverIp;
 
-	public char getPlayer() {
+	public byte getPlayer() {
 		return player;
 	}
 
-	public void setPlayer(char player) {
+	public void setPlayer(byte player) {
 		this.player = player;
 	}
 

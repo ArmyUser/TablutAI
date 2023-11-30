@@ -9,7 +9,7 @@ import java.util.HashMap;
 
 public abstract class AbstractAlgorithms {
     protected final Game game;
-    protected char player;
+    protected byte player;
     protected final HistoryCommandHandler handler;
     protected HashMap<Integer, Float> traspositionTable;
 
