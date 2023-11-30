@@ -41,5 +41,7 @@ public class MyVector {
         Random rand = new Random();
         h1 = rand.nextInt(10_000);
         h2 = rand.nextInt(10_000);
+        System.out.println("h1: "+h1);
+        System.out.println("h2: "+h2);
     }
 }//MyVector

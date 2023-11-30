@@ -23,6 +23,8 @@ public class BoardManager
     private HashSet<MyVector> citadels;
     private HashSet<MyVector> escapes;
 
+    private MyVector kingPos;
+
     private boolean isKingCaptured = false;
     private boolean isKingEscaped = false;
 
@@ -98,13 +100,15 @@ public class BoardManager
         escapes.add(new MyVector(8,2));
         escapes.add(new MyVector(8,6));
         escapes.add(new MyVector(8,7));
+
+        kingPos = new MyVector(4,4);
     }
 
     public static BoardManager getInstance(){
         if( Instance == null)
             Instance = new BoardManager();
         return Instance;
-    }
+    }//getInstance
 
     public void resetBoard(){
         Instance = new BoardManager();
@@ -177,6 +181,8 @@ public class BoardManager
         this.board = board;
     }//setBoard
 
+    public MyVector getKingPos(){ return kingPos; }//getKingPos
+
     public void setBoard(State state){
         String boardLinearString = state.toLinearString();
         int k = 0;
@@ -191,9 +197,13 @@ public class BoardManager
 
     public HashSet<MyVector> getEscapes(){ return escapes; }
 
+
     public LinkedList<MyVector> setPawn(MyVector from, MyVector to, byte player){
-        if( board[from.x][from.y] == K )
+        if( board[from.x][from.y] == K ) {
             player = K;
+            kingPos.x = to.x;
+            kingPos.y = to.y;
+        }
         removePawn(from.x, from.y);
         board[to.x][to.y] = player;
 
@@ -221,6 +231,8 @@ public class BoardManager
 
         if( board[from.x][from.y] == K ){
             player = K;
+            kingPos.x = to.x;
+            kingPos.y = to.y;
         }
 
         // remove
@@ -233,8 +245,9 @@ public class BoardManager
             isKingEscaped = false;
             isKingCaptured = false;
         }
-        if( position != null )
+        if( position != null ){
             board[position.x][position.y] = color;
+        }
     }//respawnPawn
 
     private LinkedList<MyVector> capture(MyVector to, byte currentPlayer, byte opposite){

@@ -3,7 +3,6 @@ package it.unibo.ai.didattica.competition.tablut.util;
 import it.unibo.ai.didattica.competition.tablut.game.BoardManager;
 
 import java.util.HashSet;
-import java.util.LinkedList;
 
 public class Heuristics {
     private final BoardManager bm;
@@ -30,17 +29,8 @@ public class Heuristics {
         float safety = 0;
         float escapeValue = 0;
 
-        int i = 0;
-        int j = 0;
-        while( i < 8 ){
-            j = 0;
-            while( j < 8 && board[i][j] != BoardManager.K ) j++;
-            if( board[i][j] == BoardManager.K ) break;
-            i++;
-        }
-
-        //KING CAPTURED
-        //if( i == 9 && j == 9) return new float[]{Integer.MIN_VALUE,Integer.MIN_VALUE};
+        int i = bm.getKingPos().x;
+        int j = bm.getKingPos().y;
 
         //TOP SAFETY
         int k = i-1;
@@ -91,17 +81,8 @@ public class Heuristics {
         float safety = safetyCoefficient*4;
         float escapeValue = ESCAPE_COEFFICIENT*4;
 
-        int i = 0;
-        int j = 0;
-        while( i < 8 ){
-            j = 0;
-            while( j < 8 && board[i][j] != BoardManager.K ) j++;
-            if( board[i][j] == BoardManager.K ) break;
-            i++;
-        }
-
-        //KING CAPTURED
-        //if( i == 9 && j == 9) return new float[]{Integer.MIN_VALUE,Integer.MIN_VALUE};
+        int i = bm.getKingPos().x;
+        int j = bm.getKingPos().y;
 
         //TOP SAFETY
         int k = i-1;
