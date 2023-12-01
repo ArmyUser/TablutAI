@@ -1,7 +1,7 @@
 package it.unibo.ai.didattica.competition.tablut.game;
 
-import it.unibo.ai.didattica.competition.tablut.command.ActionCommand;
-import it.unibo.ai.didattica.competition.tablut.command.HistoryCommandHandler;
+//import it.unibo.ai.didattica.competition.tablut.command.ActionCommand;
+//import it.unibo.ai.didattica.competition.tablut.command.HistoryCommandHandler;
 import it.unibo.ai.didattica.competition.tablut.domain.GameState;
 import it.unibo.ai.didattica.competition.tablut.player.AlphaBetaCutoffPlayer;
 import it.unibo.ai.didattica.competition.tablut.player.Player;
@@ -13,7 +13,7 @@ import java.util.LinkedList;
 import java.util.Map;
 
 public class Testing {
-    private static void testThroneKingCapture(){
+    private static void testThroneKingCapture(GameState state){
         /*
         Throne neighborhood configuration:
             . B .
@@ -25,25 +25,25 @@ public class Testing {
          */
 
         //Throne configuration
-        byte[][] board = BoardManager.getInstance().getBoard();
-        board[3][3] = BoardManager.E;
-        board[3][4] = BoardManager.B;
-        board[3][5] = BoardManager.E;
+        byte[][] board = state.getBoard();
+        board[3][3] = GameState.E;
+        board[3][4] = GameState.B;
+        board[3][5] = GameState.E;
 
-        board[4][3] = BoardManager.B;
-        board[4][5] = BoardManager.B;
+        board[4][3] = GameState.B;
+        board[4][5] = GameState.B;
 
-        board[5][3] = BoardManager.E;
-        board[5][4] = BoardManager.E;
-        board[5][5] = BoardManager.E;
+        board[5][3] = GameState.E;
+        board[5][4] = GameState.E;
+        board[5][5] = GameState.E;
 
-        board[6][4] = BoardManager.B;
+        board[6][4] = GameState.B;
 
         //Black move
-        BoardManager.getInstance().setPawn(new MyVector(6,4), new MyVector(5,4),BoardManager.B);
+        state.setPawn(new MyVector(6,4), new MyVector(5,4),GameState.B);
     }//testThroneKingCapture
 
-    private static void testAdjacentKingCapture(){
+    private static void testAdjacentKingCapture(GameState state){
         /*
         Throne neighborhood configuration:
             . . B . . .
@@ -55,27 +55,27 @@ public class Testing {
          */
 
         //Throne configuration
-        byte[][] board = BoardManager.getInstance().getBoard();
-        board[3][4] = BoardManager.E;
-        board[3][5] = BoardManager.B;
-        board[3][6] = BoardManager.E;
+        byte[][] board = state.getBoard();
+        board[3][4] = GameState.E;
+        board[3][5] = GameState.B;
+        board[3][6] = GameState.E;
 
-        board[4][4] = BoardManager.T;
-        board[4][5] = BoardManager.K;
-        board[4][6] = BoardManager.E;
-        board[4][7] = BoardManager.E;
-        board[4][8] = BoardManager.B;
+        board[4][4] = GameState.T;
+        board[4][5] = GameState.K;
+        board[4][6] = GameState.E;
+        board[4][7] = GameState.E;
+        board[4][8] = GameState.B;
 
-        board[5][4] = BoardManager.E;
-        board[5][5] = BoardManager.B;
-        board[5][6] = BoardManager.E;
+        board[5][4] = GameState.E;
+        board[5][5] = GameState.B;
+        board[5][6] = GameState.E;
 
         //Black move
-        BoardManager.getInstance().setPawn(new MyVector(4,8), new MyVector(4,7),BoardManager.B);
-        BoardManager.getInstance().setPawn(new MyVector(4,7), new MyVector(4,6),BoardManager.B);
+        state.setPawn(new MyVector(4,8), new MyVector(4,7),GameState.B);
+        state.setPawn(new MyVector(4,7), new MyVector(4,6),GameState.B);
     }//testAdjacentKingCapture
 
-    private static void testGeneralKingCapture(){
+    private static void testGeneralKingCapture(GameState state){
         /*
         Throne neighborhood configuration:
             . B . . .
@@ -86,27 +86,27 @@ public class Testing {
          */
 
         //Throne configuration
-        byte[][] board = BoardManager.getInstance().getBoard();
-        board[3][4] = BoardManager.E;
-        board[3][5] = BoardManager.B;
-        board[3][6] = BoardManager.E;
-        board[3][7] = BoardManager.E;
+        byte[][] board = state.getBoard();
+        board[3][4] = GameState.E;
+        board[3][5] = GameState.B;
+        board[3][6] = GameState.E;
+        board[3][7] = GameState.E;
 
-        board[4][4] = BoardManager.T;
-        board[4][5] = BoardManager.E;
-        board[4][6] = BoardManager.K;
-        board[4][7] = BoardManager.B;
+        board[4][4] = GameState.T;
+        board[4][5] = GameState.E;
+        board[4][6] = GameState.K;
+        board[4][7] = GameState.B;
 
-        board[5][4] = BoardManager.E;
-        board[5][5] = BoardManager.E;
-        board[5][6] = BoardManager.E;
-        board[5][7] = BoardManager.E;
+        board[5][4] = GameState.E;
+        board[5][5] = GameState.E;
+        board[5][6] = GameState.E;
+        board[5][7] = GameState.E;
 
         //Black move
-        BoardManager.getInstance().setPawn(new MyVector(3,5), new MyVector(4,5),BoardManager.B);
+        state.setPawn(new MyVector(3,5), new MyVector(4,5),GameState.B);
     }//testGeneralKingCapture
 
-    private static void testCitadelKingCapture(){
+    private static void testCitadelKingCapture(GameState state){
         /*
         Throne neighborhood configuration:
             . B . . .
@@ -117,27 +117,27 @@ public class Testing {
          */
 
         //Throne configuration
-        byte[][] board = BoardManager.getInstance().getBoard();
-        board[3][4] = BoardManager.E;
-        board[3][5] = BoardManager.B;
-        board[3][6] = BoardManager.E;
-        board[3][7] = BoardManager.E;
+        byte[][] board = state.getBoard();
+        board[3][4] = GameState.E;
+        board[3][5] = GameState.B;
+        board[3][6] = GameState.E;
+        board[3][7] = GameState.E;
 
-        board[4][4] = BoardManager.T;
-        board[4][5] = BoardManager.E;
-        board[4][6] = BoardManager.K;
-        board[4][7] = BoardManager.E; //Only row changed
+        board[4][4] = GameState.T;
+        board[4][5] = GameState.E;
+        board[4][6] = GameState.K;
+        board[4][7] = GameState.E; //Only row changed
 
-        board[5][4] = BoardManager.E;
-        board[5][5] = BoardManager.E;
-        board[5][6] = BoardManager.E;
-        board[5][7] = BoardManager.E;
+        board[5][4] = GameState.E;
+        board[5][5] = GameState.E;
+        board[5][6] = GameState.E;
+        board[5][7] = GameState.E;
 
         //Black move
-        BoardManager.getInstance().setPawn(new MyVector(3,5), new MyVector(4,5),BoardManager.B);
+        state.setPawn(new MyVector(3,5), new MyVector(4,5),GameState.B);
     }//testCitadelKingCapture
 
-    private static void testDoAndUndo(){
+    private static void testDoAndUndo(GameState state){
         /*
         Throne neighborhood configuration:
             . B . . .
@@ -148,33 +148,36 @@ public class Testing {
          */
 
         //Throne configuration
-        byte[][] board = BoardManager.getInstance().getBoard();
-        board[3][4] = BoardManager.E;
-        board[3][5] = BoardManager.B;
-        board[3][6] = BoardManager.E;
-        board[3][7] = BoardManager.E;
+        byte[][] board = state.getBoard();
+        board[3][4] = GameState.E;
+        board[3][5] = GameState.B;
+        board[3][6] = GameState.E;
+        board[3][7] = GameState.E;
 
-        board[4][4] = BoardManager.T;
-        board[4][5] = BoardManager.E;
-        board[4][6] = BoardManager.W;
-        board[4][7] = BoardManager.B;
+        board[4][4] = GameState.T;
+        board[4][5] = GameState.E;
+        board[4][6] = GameState.W;
+        board[4][7] = GameState.B;
 
-        board[5][4] = BoardManager.E;
-        board[5][5] = BoardManager.E;
-        board[5][6] = BoardManager.E;
-        board[5][7] = BoardManager.E;
+        board[5][4] = GameState.E;
+        board[5][5] = GameState.E;
+        board[5][6] = GameState.E;
+        board[5][7] = GameState.E;
 
+        /*
         //Black move
         HistoryCommandHandler handler = new HistoryCommandHandler();
 
-        handler.handle(new ActionCommand(new MyVector(3,5), new MyVector(4,5), BoardManager.B));
-        System.out.println(BoardManager.getInstance());
+        handler.handle(new ActionCommand(new MyVector(3,5), new MyVector(4,5), GameState.B));
+        System.out.println(GameState.getInstance());
 
         handler.undo();
-        System.out.println(BoardManager.getInstance());
+        System.out.println(GameState.getInstance());
+
+         */
     }//testCitadelKingCapture
 
-    private static void testKingEscape(){
+    private static void testKingEscape(GameState state){
         /*
         Throne neighborhood configuration:
             . . . . .
@@ -185,10 +188,11 @@ public class Testing {
          */
 
         //Throne configuration
-        byte[][] board = BoardManager.getInstance().getBoard();
-        board[1][1] = BoardManager.E;
-        board[1][2] = BoardManager.K;
+        byte[][] board = state.getBoard();
+        board[1][1] = GameState.E;
+        board[1][2] = GameState.K;
 
+        /*
         //Black move
         HistoryCommandHandler handler = new HistoryCommandHandler();
 
@@ -197,9 +201,10 @@ public class Testing {
 
         handler.undo();
         System.out.println(BoardManager.getInstance());
+        */
     }//testCitadelKingCapture
 
-    private static void testCitadelsMoves(){
+    private static void testCitadelsMoves(GameState state){
         /*
         Throne neighborhood configuration:
             . C B C .
@@ -210,14 +215,14 @@ public class Testing {
          */
 
         //configuration
-        byte[][] board = BoardManager.getInstance().getBoard();
-        board[0][3] = BoardManager.B;
-        board[0][4] = BoardManager.E;
-        board[0][5] = BoardManager.E;
+        byte[][] board = state.getBoard();
+        board[0][3] = GameState.B;
+        board[0][4] = GameState.E;
+        board[0][5] = GameState.E;
 
         //Black move
-        System.out.println(BoardManager.getInstance());
-        var map = BoardManager.getInstance().getPossibleMoves(BoardManager.B);
+        System.out.println(state);
+        var map = state.getPossibleMoves();
 
         for(Map.Entry<MyVector, HashSet<MyVector>> entry : map.entrySet() ){
             System.out.println(entry.getKey()+": "+entry.getValue()+"\n");
@@ -321,6 +326,6 @@ public class Testing {
         //testGeneralKingCapture(); OK!
         //testCitadelKingCapture(); OK!
         //testDoAndUndo();
-        testCitadelsMoves();
+        //testCitadelsMoves();
     }//main
 }//Testing

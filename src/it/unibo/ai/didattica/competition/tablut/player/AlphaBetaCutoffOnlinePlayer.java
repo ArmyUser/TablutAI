@@ -1,31 +1,22 @@
 package it.unibo.ai.didattica.competition.tablut.player;
 
 import it.unibo.ai.didattica.competition.tablut.algorithms.AlphaBetaCutoffAlgorithm;
-import it.unibo.ai.didattica.competition.tablut.command.ActionCommand;
-import it.unibo.ai.didattica.competition.tablut.command.HistoryCommandHandler;
 import it.unibo.ai.didattica.competition.tablut.domain.Action;
 import it.unibo.ai.didattica.competition.tablut.domain.GameState;
 import it.unibo.ai.didattica.competition.tablut.domain.State;
-import it.unibo.ai.didattica.competition.tablut.game.BoardManager;
 import it.unibo.ai.didattica.competition.tablut.game.Game;
 import it.unibo.ai.didattica.competition.tablut.game.GameTablut;
 import it.unibo.ai.didattica.competition.tablut.util.MyVector;
 
 import java.io.IOException;
 import java.util.HashMap;
-import java.util.HashSet;
 
 public class AlphaBetaCutoffOnlinePlayer extends OnlinePlayer{
-    private final BoardManager bm;
     private HashMap<Integer,String> rowConverter;
-    private HistoryCommandHandler handler;
 
-    public AlphaBetaCutoffOnlinePlayer(Game game, HistoryCommandHandler handler, int maxDepth, String player,
+    public AlphaBetaCutoffOnlinePlayer(Game game, int maxDepth, String player,
                                  String name, int timeout, String ipAddress ) throws IOException {
-        super(new AlphaBetaCutoffAlgorithm(game,handler,maxDepth,player, timeout), player, name, timeout, ipAddress);
-
-        bm = BoardManager.getInstance();
-        this.handler = handler;
+        super(new AlphaBetaCutoffAlgorithm(game,maxDepth,player, timeout), player, name, timeout, ipAddress);
 
         rowConverter = new HashMap<>();
         rowConverter.put(0,"a");
@@ -49,29 +40,28 @@ public class AlphaBetaCutoffOnlinePlayer extends OnlinePlayer{
             e.printStackTrace();
         }
 
-        if (this.getPlayer() == BoardManager.W ) {
+        if (this.getPlayer() == GameState.W ) {
             System.out.println("You are player W!");
             while (true) {
                 try {
+                    GameState state = new GameState(GameState.W, null);
+
                     //It will read the state in the server format
                     this.read();
 
                     //Set the board manager with the new board configuration
-                    bm.setBoard(getCurrentState());
+                    state.setBoard(getCurrentState());
 
                     //In our adaptation we have to display the board through board manager
                     System.out.println("Current state:");
-                    System.out.println(bm);
+                    System.out.println(state);
 
                     //Compute the best move
-                    HashMap<MyVector, HashSet<MyVector>> moves = bm.getPossibleMoves(BoardManager.W);
-                    MyVector[] move = getNextAction(new GameState(BoardManager.W, moves));
+                    MyVector[] move = getNextAction(state);
 
                     //Translate the best move in a way readable by server
                     String from = rowConverter.get(move[0].y) + (move[0].x+1);
                     String to = rowConverter.get(move[1].y) + (move[1].x+1);
-                    handler.handle(new ActionCommand(move[0], move[1], BoardManager.W));
-                    handler.clearHistory();
 
                     System.out.println("From: "+from);
                     System.out.println("To: "+to);
@@ -100,8 +90,9 @@ public class AlphaBetaCutoffOnlinePlayer extends OnlinePlayer{
             System.out.println("You are player " + this.getPlayer() + "!");
             while (true) {
                 try {
+                    GameState state = new GameState(GameState.B, null);
+
                     //It will read the state in the server format
-                    //In this case the
                     this.read();
 
                     //In our adaptation we have to display the board through board manager
@@ -113,17 +104,14 @@ public class AlphaBetaCutoffOnlinePlayer extends OnlinePlayer{
                     this.read();
 
                     //Set the board manager with the new board configuration
-                    bm.setBoard(getCurrentState());
+                    state.setBoard(getCurrentState());
 
                     //In our adaptation we have to display the board through board manager
                     System.out.println("Current state:");
-                    System.out.println(bm);
+                    System.out.println(state);
 
                     //Compute the best move
-                    HashMap<MyVector, HashSet<MyVector>> moves = bm.getPossibleMoves(BoardManager.B);
-                    MyVector[] move = getNextAction(new GameState(BoardManager.B, moves));
-                    handler.handle(new ActionCommand(move[0], move[1], BoardManager.W));
-                    handler.clearHistory();
+                    MyVector[] move = getNextAction(state);
 
                     //Translate the best move in a way readable by server
                     String from = rowConverter.get(move[0].y) + (move[0].x+1);
@@ -148,15 +136,48 @@ public class AlphaBetaCutoffOnlinePlayer extends OnlinePlayer{
         String name = "Tonino's friends";
         OnlinePlayer client = null;
 
+        byte[][] board = new byte[9][9];
+        for (int i = 0; i < 9; i++)
+            for (int j = 0; j < 9; j++)
+                board[i][j] = GameState.E;
+
+        board[4][4] = GameState.K;
+
+        board[2][4] = GameState.W;
+        board[3][4] = GameState.W;
+        board[5][4] = GameState.W;
+        board[6][4] = GameState.W;
+        board[4][2] = GameState.W;
+        board[4][3] = GameState.W;
+        board[4][5] = GameState.W;
+        board[4][6] = GameState.W;
+
+        board[0][3] = GameState.B;
+        board[0][4] = GameState.B;
+        board[0][5] = GameState.B;
+        board[1][4] = GameState.B;
+        board[8][3] = GameState.B;
+        board[8][4] = GameState.B;
+        board[8][5] = GameState.B;
+        board[7][4] = GameState.B;
+        board[3][0] = GameState.B;
+        board[4][0] = GameState.B;
+        board[5][0] = GameState.B;
+        board[4][1] = GameState.B;
+        board[3][8] = GameState.B;
+        board[4][8] = GameState.B;
+        board[5][8] = GameState.B;
+        board[4][7] = GameState.B;
+
         //In order to get different move ordering each new match
         MyVector.initHash();
-        HistoryCommandHandler handler = new HistoryCommandHandler();
-        Game game = new GameTablut(new GameState(BoardManager.W, BoardManager.getInstance().getPossibleMoves(BoardManager.W)), handler);
+        Game game = new GameTablut(
+                new GameState(
+                        GameState.W,
+                        board) );
 
         try {
-            client = new AlphaBetaCutoffOnlinePlayer(game,
-                    handler, maxDepth, args[0], name,
-                    Integer.parseInt(args[1]), args[2]);
+            client = new AlphaBetaCutoffOnlinePlayer(game, maxDepth, args[0], name, Integer.parseInt(args[1]), args[2]);
         } catch (IOException e) {
             e.printStackTrace();
         }

@@ -2,27 +2,504 @@ package it.unibo.ai.didattica.competition.tablut.domain;
 
 import it.unibo.ai.didattica.competition.tablut.util.MyVector;
 
-import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedList;
+import java.util.*;
 
 /**
  * Abstract class for a State of a game We have a representation of the board
  * and the turn
  */
 public class GameState {
-	private final byte toMove;
-	private final HashMap<MyVector, HashSet<MyVector>> moves;
+	private byte toMove;
+	//private HashMap<MyVector, HashSet<MyVector>> moves;
+	private byte[][] board;
 
-	public GameState(byte toMove, HashMap<MyVector,HashSet<MyVector>> moves){
+	public static final byte W = (byte) 'W';
+	public static final byte B = (byte) 'B';
+	public static final byte E = (byte) 'O';
+	public static final byte T = (byte) 'T';
+	public static final byte K = (byte) 'K';
+
+	private static HashSet<MyVector> citadels = null;
+	private static HashSet<MyVector> escapes = null;
+
+	private boolean isKingCaptured = false;
+	private boolean isKingEscaped = false;
+
+	public GameState(byte toMove, byte[][] board){
 		this.toMove = toMove;
-		this.moves = moves;
+
+		if( board != null )
+			this.board = board;
+		else
+			this.board = new byte[9][9];
+
+		if( citadels == null ) {
+			citadels = new HashSet<>();
+			escapes = new HashSet<>();
+			citadels.add(new MyVector(0, 3));
+			citadels.add(new MyVector(0, 4));
+			citadels.add(new MyVector(0, 5));
+			citadels.add(new MyVector(1, 4));
+			citadels.add(new MyVector(3, 8));
+			citadels.add(new MyVector(4, 8));
+			citadels.add(new MyVector(5, 8));
+			citadels.add(new MyVector(4, 7));
+			citadels.add(new MyVector(4, 1));
+			citadels.add(new MyVector(3, 0));
+			citadels.add(new MyVector(4, 0));
+			citadels.add(new MyVector(5, 0));
+			citadels.add(new MyVector(7, 4));
+			citadels.add(new MyVector(8, 3));
+			citadels.add(new MyVector(8, 4));
+			citadels.add(new MyVector(8, 5));
+			//Throne
+			citadels.add(new MyVector(4, 4));
+
+			escapes.add(new MyVector(0, 1));
+			escapes.add(new MyVector(0, 2));
+			escapes.add(new MyVector(0, 6));
+			escapes.add(new MyVector(0, 7));
+			escapes.add(new MyVector(1, 0));
+			escapes.add(new MyVector(2, 0));
+			escapes.add(new MyVector(1, 8));
+			escapes.add(new MyVector(2, 8));
+			escapes.add(new MyVector(6, 0));
+			escapes.add(new MyVector(7, 0));
+			escapes.add(new MyVector(6, 8));
+			escapes.add(new MyVector(7, 8));
+			escapes.add(new MyVector(8, 1));
+			escapes.add(new MyVector(8, 2));
+			escapes.add(new MyVector(8, 6));
+			escapes.add(new MyVector(8, 7));
+		}
 	}
 
 	public byte getPlayer(){ return toMove; }
 
-	public HashMap<MyVector,HashSet<MyVector>> getMoves(){ return moves; }
+	//public HashMap<MyVector,HashSet<MyVector>> getMoves(){ return moves; }
+
+	public byte[][] getBoard() {
+		return board;
+	}
+
+	public HashSet<MyVector> getCitadels(){ return citadels; }
+
+	public String boardString() {
+		StringBuilder result = new StringBuilder();
+		result.append(" \t");
+		for(int i=0; i< board.length; i++)
+			result.append(i+" ");
+
+		result.append("\n\n");
+
+		for (int i = 0; i < board.length; i++) {
+			result.append(i+"\t");
+			for (int j = 0; j < board.length; j++) {
+				if( board[i][j] == E ){
+					if( i == 4 && j == 4 ) result.append("⚿ ");
+					else if( citadels.contains(new MyVector(i,j)) ) result.append("■ ");
+					else result.append("□ ");
+				}
+				else result.append((char) board[i][j]+" ");
+				if (j == 8) result.append("\n");
+
+			}
+		}
+		return result.toString();
+	}//boardString
+
+	@Override
+	public String toString() {
+		StringBuilder result = new StringBuilder();
+
+		// board
+		result.append("");
+		result.append(boardString());
+
+		result.append("-");
+		result.append("\n");
+
+		return result.toString();
+	}//toString
+
+	public String toLinearString() {
+		StringBuilder result = new StringBuilder();
+
+		// board
+		for (int i = 0; i < board.length; i++)
+			for (int j = 0; j < board.length; j++)
+				result.append(board[i][j]);
+
+		return result.toString();
+	}//toLinearString
+
+	public void removePawn(int row, int column) {
+		board[row][column] = E;
+	}//removePawn
+
+	public void setBoard(byte[][] board) {
+		this.board = board;
+	}//setBoard
+
+	public void setBoard(State state){
+		String boardLinearString = state.toLinearString();
+		int k = 0;
+
+		for( int i=0; i<board.length; i++ ){
+			for (int j = 0; j < board.length; j++) {
+				if( i==4 && j==4 &&  (byte) boardLinearString.charAt(k) == 'T' ){
+					board[i][j] = E;
+				}
+				else {
+					board[i][j] = (byte) boardLinearString.charAt(k); //?????????
+				}
+				k++;
+			}
+		}
+	}//setBoard
+
+	//public void setMoves( HashMap<MyVector,HashSet<MyVector>> moves ){ this.moves = moves; }
+
+	public void setPlayer(byte player){ this.toMove = player; }
+
+	public HashSet<MyVector> getEscapes(){ return escapes; }
+
+	public LinkedList<MyVector> setPawn(MyVector from, MyVector to, byte player){
+		if( board[from.x][from.y] == K ) {
+			player = K;
+		}
+		removePawn(from.x, from.y);
+		board[to.x][to.y] = player;
+
+		byte opposite = W;
+		if( player == B ){
+			LinkedList<MyVector> kingPos = captureKing(to);
+			if( kingPos.size() > 0 ){
+				isKingCaptured = true;
+				return kingPos;
+			}
+		}
+		else{
+			opposite = B;
+			player = W;
+		}
+
+		return capture(to,player,opposite);
+	}//setPawn
+
+	private LinkedList<MyVector> capture(MyVector to, byte currentPlayer, byte opposite){
+		LinkedList<MyVector> captured = new LinkedList<>();
+		byte eventualKing = currentPlayer == W ? K : (byte) '.';
+
+		//top capture
+		if( to.x > 1 ){
+			if( board[to.x-1][to.y] == opposite ){
+				//Captured by 2 allies or by one allies and one citadel (empty throne included)
+				if( board[to.x-2][to.y] == currentPlayer ||  board[to.x-2][to.y] == eventualKing ||
+						( citadels.contains(new MyVector(to.x-2,to.y)) && board[to.x-2][to.y] == E ) ){
+					removePawn(to.x-1,to.y);
+					captured.add(new MyVector(to.x-1,to.y));
+				}
+			}
+		}
+
+		//bottom capture
+		if( to.x < 7 ){
+			if( board[to.x+1][to.y] == opposite ){
+				//Captured by 2 allies or by one allies and one citadel (empty throne included)
+				if( board[to.x+2][to.y] == currentPlayer ||  board[to.x+2][to.y] == eventualKing ||
+						( citadels.contains(new MyVector(to.x+2,to.y)) && board[to.x+2][to.y] == E ) ) {
+					removePawn(to.x+1,to.y);
+					captured.add(new MyVector(to.x+1,to.y));
+				}
+			}
+		}
+
+		//right capture
+		if( to.y < 7 ){
+			if( board[to.x][to.y+1] == opposite ){
+				//Captured by 2 allies or by one allies and one citadel (empty throne included)
+				if( board[to.x][to.y+2] == currentPlayer ||  board[to.x][to.y+2] == eventualKing ||
+						( citadels.contains(new MyVector(to.x,to.y+2)) && board[to.x][to.y+2] == E ) ){
+					removePawn(to.x,to.y+1);
+					captured.add(new MyVector(to.x,to.y+1));
+				}
+			}
+		}
+
+		//left capture
+		if( to.y > 1 ){
+			if( board[to.x][to.y-1] == opposite ){
+				//Captured by 2 allies or by one allies and one citadel (empty throne included)
+				if( board[to.x][to.y-2] == currentPlayer ||  board[to.x][to.y-2] == eventualKing ||
+						( citadels.contains(new MyVector(to.x,to.y-2)) && board[to.x][to.y-2] == E ) ){
+					removePawn(to.x,to.y-1);
+					captured.add(new MyVector(to.x,to.y-1));
+				}
+			}
+		}
+		return captured;
+	}//capture
+
+	private LinkedList<MyVector> captureKing(MyVector to){
+		LinkedList<MyVector> kingPos = new LinkedList<>();
+		//Top king
+		if( to.x > 1 ){
+			if( board[to.x-1][to.y] == K ){
+				kingPos.add(new MyVector(to.x-1,to.y));
+				if( board[4][4] == K ) {
+					if (captureKingOnThrone()) return kingPos;
+				}
+				else if( isAdjacentToThrone(to.x-1, to.y) ) {
+					if (captureKingAdjacent(to.x-1,to.y)) return kingPos;
+				}
+				else {
+					if ( capture(to, B, K).size() > 0 ) return kingPos;
+				}
+			}
+		}
+
+		//Bottom king
+		if( to.x < 7 ){
+			if( board[to.x+1][to.y] == K ){
+				kingPos.add(new MyVector(to.x+1,to.y));
+				if( board[4][4] == K ) {
+					if (captureKingOnThrone()) return kingPos;
+				}
+				else if (isAdjacentToThrone(to.x + 1, to.y)) {
+					if (captureKingAdjacent(to.x+1,to.y)) return kingPos;
+				}
+				else {
+					if (capture(to, B, K).size() > 0) return kingPos;
+				}
+			}
+		}
+
+		//Right king
+		if( to.y < 7 ){
+			if( board[to.x][to.y+1] == K ){
+				kingPos.add(new MyVector(to.x,to.y+1));
+				if( board[4][4] == K ) {
+					if (captureKingOnThrone()) return kingPos;
+				}
+				else if( isAdjacentToThrone(to.x, to.y+1) ) {
+					if (captureKingAdjacent(to.x,to.y+1)) return kingPos;
+				}
+				else {
+					if (capture(to, B, K).size() > 0) return kingPos;
+				}
+			}
+		}
+
+		//Left king
+		if( to.y > 1 ){
+			if( board[to.x][to.y-1] == K ){
+				kingPos.add(new MyVector(to.x,to.y-1));
+				if( board[4][4] == K ) {
+					if (captureKingOnThrone()) return kingPos;
+				}
+				else if( isAdjacentToThrone(to.x, to.y-1) ) {
+					if (captureKingAdjacent(to.x, to.y-1)) return kingPos;
+				}
+				else {
+					if (capture(to, B, K).size() > 0) return kingPos;
+				}
+			}
+		}
+
+		return new LinkedList<>();
+	}//captureKing
+
+	private boolean captureKingOnThrone(){
+		return board[3][4] == B && board[5][4] == B && board[4][3] == B && board[4][5] == B;
+	}//captureKingOnThrone
+
+	private boolean isAdjacentToThrone(int x, int y){
+		return (Math.abs(x-4) == 1 && y == 4) || (Math.abs(y-4) == 1 && x == 4);
+	}//isAdjacentToThrone
+
+	private boolean captureKingAdjacent(int x, int y){
+		//Black pawn above and below the king
+		if( board[x-1][y] == B && board[x+1][y] == B ){
+			//Black pawn on the right of the king
+			if( board[x][y+1] == B ) return true;
+			//Black pawn on the left of the king
+			if( board[x][y-1] == B ) return true;
+		}
+		//Black pawn to the left and to the right of the king
+		if( board[x][y-1] == B && board[x][y+1] == B ){
+			//Black pawn above the king
+			if( board[x-1][y] == B ) return true;
+			//Black pawn below the king
+			if( board[x+1][y] == B ) return true;
+		}
+		return false;
+	}//captureKingAdjacent
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((this.board == null) ? 0 : deepHashCode(board));
+		return result;
+	}//hashCode
+
+	private static int deepHashCode(byte[][] matrix) {
+		int tmp[] = new int[matrix.length];
+		for (int i = 0; i < matrix.length; i++) {
+			tmp[i] = Arrays.hashCode(matrix[i]);
+		}
+		return Arrays.hashCode(tmp);
+	}//deepHashCode
+
+	public String getCellEncoding(int row, int column) {
+		String ret;
+		char col = (char) (column + 97);
+		ret = col + "" + (row + 1);
+		return ret;
+	}//getCellEncoding
+
+	public GameState clone() {
+		GameState result = new GameState(toMove,null);
+
+		byte newboard[][] = new byte[9][9];
+
+		for (int i = 0; i < this.board.length; i++)
+			for (int j = 0; j < this.board[i].length; j++)
+				newboard[i][j] = board[i][j];
+
+		result.setBoard(newboard);
+		return result;
+	}//clone
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (!(obj instanceof GameState))
+			return false;
+		GameState other = (GameState) obj;
+		if (this.board == null) {
+			if (other.board != null)
+				return false;
+		} else {
+			if (other.board == null)
+				return false;
+			if (this.board.length != other.board.length)
+				return false;
+			if (this.board[0].length != other.board[0].length)
+				return false;
+			for (int i = 0; i < other.board.length; i++)
+				for (int j = 0; j < other.board[i].length; j++)
+					if (this.board[i][j] != other.board[i][j])
+						return false;
+		}
+		return true;
+	}//equals
+
+	public HashMap<MyVector,HashSet<MyVector>> getPossibleMoves() {
+		HashMap<MyVector,HashSet<MyVector>> res = new HashMap<>(); //Format: from position -> list of allowed positions
+		MyVector thisPos;
+
+		byte eventualKing = (byte) '.';
+		if( toMove == W ) eventualKing = K;
+
+		for( int i=0; i < board.length; i++){
+			for( int j=0; j < board.length; j++){
+				//If it is the turn of the current player, then
+				if( (board[i][j] == toMove || board[i][j] == eventualKing) ){
+					HashSet<MyVector> moves = new HashSet<>();
+					res.put(new MyVector(i,j),moves);
+
+					//Right side moves
+					int k = j+1;
+					thisPos = new MyVector(i,k);
+					while( k < board.length && board[i][k] == E && !citadels.contains(thisPos) ){
+						moves.add(new MyVector(thisPos));
+						k++;
+						thisPos = new MyVector(i,k);
+					}
+
+					//Down side moves
+					k = i+1;
+					thisPos = new MyVector(k,j);
+					while( k < board.length && board[k][j] == E && !citadels.contains(thisPos) ){
+						moves.add(new MyVector(thisPos));
+						k++;
+						thisPos = new MyVector(k,j);
+					}
+
+					//Left side moves
+					k = j-1;
+					thisPos = new MyVector(i,k);
+					while( k > -1 && board[i][k] == E && !citadels.contains(thisPos) ){
+						moves.add(new MyVector(thisPos));
+						k--;
+						thisPos = new MyVector(i,k);
+					}
+
+					//Top side moves
+					k = i-1;
+					thisPos = new MyVector(k,j);
+					while( k > -1 && board[k][j] == E && !citadels.contains(thisPos) ){
+						moves.add(new MyVector(thisPos));
+						k--;
+						thisPos = new MyVector(k,j);
+					}
+
+					//If the black pawn is inside a citadel
+					if( citadels.contains(new MyVector(i,j)) && toMove == B ){
+						int l = i-1;
+						while( l > -1 && (l!=4 || j!=4) && board[l][j] == E ){
+							if( i==8 && (j==3 || j==5) && l==0) break;
+							if( !moves.contains(new MyVector(l,j)) )
+								moves.add(new MyVector(l,j));
+							l--;
+						}
+
+						l = i+1;
+						while( l < 9 && (l!=4 || j!=4) && board[l][j] == E ){
+							if( i==0 && (j==3 || j==5) && l==8) break;
+							if( !moves.contains(new MyVector(l,j)) )
+								moves.add(new MyVector(l,j));
+							l++;
+						}
+
+						l = j-1;
+						while( l > -1 && (i!=4 || l!=4) && board[i][l] == E ){
+							if( j==8 && (i==3 || i==5) && l==0) break;
+							if( !moves.contains(new MyVector(i,l)) )
+								moves.add(new MyVector(i,l));
+							l--;
+						}
+
+						l = j+1;
+						while( l < 9 && (i!=4 || l!=4) && board[i][l] == E ){
+							if( j==0 && (i==3 || i==5) && l==8) break;
+							if( !moves.contains(new MyVector(i,l)) )
+								moves.add(new MyVector(i,l));
+							l++;
+						}
+					}
+				}//if
+			}//for2
+		}//for1
+		return res;
+	}//getPossibleMoves
+
+	public boolean kingEscapes() {
+		for( MyVector pos : escapes ) {
+			if (board[pos.x][pos.y] == K) {
+				isKingEscaped = true;
+				return true;
+			}
+		}
+		return false;
+	}//kingReachesJolly
+
+	public boolean kingWasCaptured() {
+		return isKingCaptured;
+	}//kingWasCaptured
 }//State

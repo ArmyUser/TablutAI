@@ -1,7 +1,6 @@
 package it.unibo.ai.didattica.competition.tablut.player;
 
 import it.unibo.ai.didattica.competition.tablut.algorithms.AbstractAlgorithms;
-import it.unibo.ai.didattica.competition.tablut.command.HistoryCommandHandler;
 import it.unibo.ai.didattica.competition.tablut.domain.GameState;
 import it.unibo.ai.didattica.competition.tablut.util.MyVector;
 

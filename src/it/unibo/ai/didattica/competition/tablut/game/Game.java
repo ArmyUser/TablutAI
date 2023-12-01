@@ -1,7 +1,6 @@
 package it.unibo.ai.didattica.competition.tablut.game;
 
 import it.unibo.ai.didattica.competition.tablut.algorithms.AlphaBetaCutoffAlgorithm;
-import it.unibo.ai.didattica.competition.tablut.command.HistoryCommandHandler;
 import it.unibo.ai.didattica.competition.tablut.domain.GameState;
 import it.unibo.ai.didattica.competition.tablut.player.Player;
 import it.unibo.ai.didattica.competition.tablut.util.MyVector;
@@ -13,9 +12,8 @@ import java.util.LinkedList;
 public abstract class Game
 {
     protected GameState initial;
-    protected HistoryCommandHandler histCmdHandler;
-    protected BoardManager bm;
-    public abstract HashMap<MyVector, HashSet<MyVector>> actions(byte player);
+
+    public abstract HashMap<MyVector, HashSet<MyVector>> actions(GameState state);
 
     public abstract GameState result(GameState state, MyVector from, MyVector to);
 
@@ -25,32 +23,29 @@ public abstract class Game
 
     public abstract byte toMove(GameState state);
 
-    public void display(){
-        System.out.println(bm.toString());
+    public void display( GameState state ){
+        System.out.println(state);
     }//display
 
     public boolean play( Player... players){
         System.out.println("Match started...");
         GameState state = initial;
-        display();
+        display(state);
         int t=1;
         while( true ){
             System.out.printf("----------Turn %d----------%n",t);
             for( Player p : players ){
                 System.out.printf("---> Player %s%n",(char)state.getPlayer());
                 MyVector[] move = p.getNextAction(state);
-                MoveHistory.getInstance().insertMove(move[0], move[1]);
                 state = result(state, move[0], move[1]);
-                bm.printPawnNumber();
                 System.out.println("From: "+move[0]);
                 System.out.println("To: "+move[1]);
-                display();
-                histCmdHandler.clearHistory();
-                if( terminalTest(state, BoardManager.B) != 0 ){
+                display(state);
+                if( terminalTest(state, GameState.B) != 0 ){
                     System.out.println("Final board");
-                    display();
+                    display(state);
                     System.out.println("Number of turns: "+t);
-                    return terminalTest(state, BoardManager.W) > 0; //If so white wins
+                    return terminalTest(state, GameState.W) > 0; //If so white wins
                 }
             }
             t ++;
