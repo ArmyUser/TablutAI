@@ -23,14 +23,26 @@ public class Heuristics {
         return new MyVector(wCount,bCount);
     }//getNumberOfPawns
 
-    public float[] computeKingSafetyAndEscapeValueForWhite(float safetyCoefficient, float ESCAPE_COEFFICIENT){
+    public MyVector getKingPos(){
+        byte[][] board = bm.getBoard();
+        for (int i = 0; i < board.length; i++) {
+            for (int j = 0; j < board.length; j++) {
+                if( board[i][j] == BoardManager.K ) return new MyVector(i,j);
+            }
+        }
+        return null;
+    }
+
+    public float[] computeKingSafetyAndEscapeValueForWhite(float safetyCoefficient, float ESCAPE_COEFFICIENT, MyVector kingPos){
         byte[][] board = bm.getBoard();
         HashSet<MyVector> citadels = bm.getCitadels();
         float safety = 0;
         float escapeValue = 0;
 
-        int i = bm.getKingPos().x;
-        int j = bm.getKingPos().y;
+        //int i = bm.getKingPos().x;
+        //int j = bm.getKingPos().y;
+        int i = kingPos.x;
+        int j = kingPos.y;
 
         //TOP SAFETY
         int k = i-1;
@@ -75,14 +87,16 @@ public class Heuristics {
         return new float[]{safety,escapeValue};
     }//computeKingSafetyAndEscapeValueForWhite
 
-    public float[] computeKingSafetyAndEscapeValueForBlack(float safetyCoefficient, float ESCAPE_COEFFICIENT){
+    public float[] computeKingSafetyAndEscapeValueForBlack(float safetyCoefficient, float ESCAPE_COEFFICIENT, MyVector kingPos){
         byte[][] board = bm.getBoard();
         HashSet<MyVector> citadels = bm.getCitadels();
         float safety = safetyCoefficient*4;
         float escapeValue = ESCAPE_COEFFICIENT*4;
 
-        int i = bm.getKingPos().x;
-        int j = bm.getKingPos().y;
+        //int i = bm.getKingPos().x;
+        //int j = bm.getKingPos().y;
+        int i = kingPos.x;
+        int j = kingPos.y;
 
         //TOP SAFETY
         int k = i-1;

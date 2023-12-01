@@ -172,19 +172,19 @@ public class AlphaBetaCutoffAlgorithm extends AbstractAlgorithms{
         }
 
         if( bm.getPawn(4,4) == BoardManager.K ){
-            PAWNS_NUMBER_WEIGHT = 3f;
-            BRIDGE_WEIGHT = 3f;
-            BRIDGE_COEFFICIENT = 1f;
-            KING_SAFETY_WEIGHT = .5f;
-            KING_ESCAPE_WEIGHT = 1f;
-            ESCAPE_COEFFICIENT = 1f;
-            SAFETY_COEFFICIENT = .5f;
-        }
-        else{
             PAWNS_NUMBER_WEIGHT = 2f;
             BRIDGE_WEIGHT = 2f;
-            BRIDGE_COEFFICIENT = .5f;
+            BRIDGE_COEFFICIENT = 1f;
             KING_SAFETY_WEIGHT = 2f;
+            KING_ESCAPE_WEIGHT = 1f;
+            ESCAPE_COEFFICIENT = 1f;
+            SAFETY_COEFFICIENT = 1f;
+        }
+        else{
+            PAWNS_NUMBER_WEIGHT = 3f;
+            BRIDGE_WEIGHT = 2f;
+            BRIDGE_COEFFICIENT = .5f;
+            KING_SAFETY_WEIGHT = 1f;
             KING_ESCAPE_WEIGHT = 1.5f;
             ESCAPE_COEFFICIENT = 1f;
             SAFETY_COEFFICIENT = 1f;
@@ -193,8 +193,9 @@ public class AlphaBetaCutoffAlgorithm extends AbstractAlgorithms{
 
 
         //HEURISTIC 2_3 (KING SAFETY AND ESCAPE VALUE)
-        bKingSafety_escapeValue = heuristics.computeKingSafetyAndEscapeValueForBlack(SAFETY_COEFFICIENT,ESCAPE_COEFFICIENT);
-        wKingSafety_escapeValue = heuristics.computeKingSafetyAndEscapeValueForWhite(SAFETY_COEFFICIENT,ESCAPE_COEFFICIENT);
+        MyVector kingPos = heuristics.getKingPos();
+        bKingSafety_escapeValue = heuristics.computeKingSafetyAndEscapeValueForBlack(SAFETY_COEFFICIENT,ESCAPE_COEFFICIENT, kingPos);
+        wKingSafety_escapeValue = heuristics.computeKingSafetyAndEscapeValueForWhite(SAFETY_COEFFICIENT,ESCAPE_COEFFICIENT, kingPos);
 
         //HEURISTIC 4 (BRIDGE POSITION)
         bBridgePosition = heuristics.getBridgeBlackValue(BRIDGE_COEFFICIENT);
