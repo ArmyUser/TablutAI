@@ -4,7 +4,6 @@ import it.unibo.ai.didattica.competition.tablut.command.ActionCommand;
 import it.unibo.ai.didattica.competition.tablut.command.HistoryCommandHandler;
 import it.unibo.ai.didattica.competition.tablut.domain.GameState;
 import it.unibo.ai.didattica.competition.tablut.player.AlphaBetaCutoffPlayer;
-import it.unibo.ai.didattica.competition.tablut.player.AlphaBetaPlayer;
 import it.unibo.ai.didattica.competition.tablut.player.Player;
 import it.unibo.ai.didattica.competition.tablut.player.QueryPlayer;
 import it.unibo.ai.didattica.competition.tablut.util.MyVector;
@@ -13,9 +12,9 @@ import java.util.HashMap;
 import java.util.HashSet;
 
 public class GameTablut extends Game{
-    public GameTablut(GameState initial){
+    public GameTablut(GameState initial, HistoryCommandHandler handler){
         this.initial = initial;
-        this.histCmdHandler = new HistoryCommandHandler();
+        this.histCmdHandler = handler;
         bm = BoardManager.getInstance();
     }
 
@@ -64,14 +63,13 @@ public class GameTablut extends Game{
     public static void main(String[] args) {
         //In order to get different move ordering each new match
         MyVector.initHash();
+        HistoryCommandHandler handler = new HistoryCommandHandler();
 
-        GameTablut tablut = new GameTablut(new GameState(BoardManager.W,BoardManager.getInstance().getPossibleMoves(BoardManager.W)));
+        GameTablut tablut = new GameTablut(new GameState(BoardManager.W,BoardManager.getInstance().getPossibleMoves(BoardManager.W)), handler);
         int maxDepth = 4;
-        Player p1 = new AlphaBetaCutoffPlayer(tablut, tablut.histCmdHandler,maxDepth, "white",60);
+        Player p1 = new AlphaBetaCutoffPlayer(tablut, handler,maxDepth, "white",60);
         //Player p2 = new QueryPlayer();
-        Player p2 = new AlphaBetaCutoffPlayer(tablut, tablut.histCmdHandler,maxDepth, "black",60);
-        //Player p1 = new AlphaBetaPlayer(tablut, tablut.histCmdHandler);
-        //Player p2 = new AlphaBetaPlayer(tablut, tablut.histCmdHandler);
+        Player p2 = new AlphaBetaCutoffPlayer(tablut, handler,maxDepth, "black",60);
         tablut.play(p1,p2);
     }//main
 }//GameTablut

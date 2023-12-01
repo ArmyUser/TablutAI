@@ -18,6 +18,7 @@ public class HistoryCommandHandler implements Handler
     public void undo(){
         Command cmd = history.removeFirst();
         cmd.undoIt();
+
     }//cmd
 
     public void clearHistory(){

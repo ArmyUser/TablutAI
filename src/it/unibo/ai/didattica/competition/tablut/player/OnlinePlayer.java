@@ -1,6 +1,7 @@
 package it.unibo.ai.didattica.competition.tablut.player;
 
 import it.unibo.ai.didattica.competition.tablut.algorithms.AbstractAlgorithms;
+import it.unibo.ai.didattica.competition.tablut.command.HistoryCommandHandler;
 import it.unibo.ai.didattica.competition.tablut.domain.GameState;
 import it.unibo.ai.didattica.competition.tablut.util.MyVector;
 
@@ -10,7 +11,7 @@ import java.net.UnknownHostException;
 public abstract class OnlinePlayer extends TablutClient implements Player{
     protected AbstractAlgorithms algorithm;
 
-    protected OnlinePlayer(AbstractAlgorithms algorithm, String player, String name, int timeout, String ipAddress) throws UnknownHostException, IOException {
+    protected OnlinePlayer(AbstractAlgorithms algorithm, String player, String name, int timeout, String ipAddress) throws IOException {
         super(player, name, timeout, ipAddress);
         this.algorithm = algorithm;
     }

@@ -1,91 +1,88 @@
 package it.unibo.ai.didattica.competition.tablut.domain;
 
-import it.unibo.ai.didattica.competition.tablut.util.MyVector;
-
 import java.io.IOException;
 import java.io.Serializable;
 import java.security.InvalidParameterException;
 
 /**
  * this class represents an action of a player
+ *
+ * @author A.Piretti
+ *
  */
 public class Action implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 
-	private MyVector from;
-	private MyVector to;
+	private String from;
+	private String to;
 
-	private byte turn;
+	private State.Turn turn;
 
-	public Action(int xFrom, int yFrom, int xTo, int yTo, byte turn) throws IOException {
-		/*if (xFrom < 0 || xFrom > 8 || xTo < 0 || xTo > 8 ||
-				yFrom < 0 || yFrom > 8 || yTo < 0 || yTo > 8 || (xFrom==xTo && yFrom == yTo) ){
-			throw new InvalidParameterException("Invalid action");
+	public Action(String from, String to, StateTablut.Turn t) throws IOException {
+		if (from.length() != 2 || to.length() != 2) {
+			throw new InvalidParameterException("the FROM and the TO string must have length=2");
 		} else {
-			from = new MyVector(xFrom, yFrom);
-			to = new MyVector(xTo, yTo);
-			this.turn = turn;
+			this.from = from;
+			this.to = to;
+			this.turn = t;
 		}
-		*/
-		from = new MyVector(xFrom, yFrom);
-		to = new MyVector(xTo, yTo);
-		this.turn = turn;
 	}
 
-	public MyVector getFrom() {
-		return from;
-	} //DEEP?
+	public String getFrom() {
+		return this.from;
+	}
 
-	public void setFrom(MyVector from) {
-		this.from = new MyVector(from.x, from.y);
-	}//setFrom
+	public void setFrom(String from) {
+		this.from = from;
+	}
 
-	public MyVector getTo() {
+	public String getTo() {
 		return to;
-	} //DEEP?
+	}
 
-	public void setTo(MyVector to) {
-		this.to = new MyVector(to.x, to.y);
-	}//setTo
+	public void setTo(String to) {
+		this.to = to;
+	}
 
-	public byte getTurn() {
+	public StateTablut.Turn getTurn() {
 		return turn;
 	}
 
-	public void setTurn(byte turn) {
+	public void setTurn(StateTablut.Turn turn) {
 		this.turn = turn;
 	}
 
 	public String toString() {
-		return "Turn: " + turn + " " + "Pawn from " + from + " to " + to;
+		return "Turn: " + this.turn + " " + "Pawn from " + from + " to " + to;
 	}
 
 	/**
 	 * @return means the index of the column where the pawn is moved from
 	 */
 	public int getColumnFrom() {
-		return from.y;
+		return Character.toLowerCase(this.from.charAt(0)) - 97;
 	}
 
 	/**
 	 * @return means the index of the column where the pawn is moved to
 	 */
 	public int getColumnTo() {
-		return to.y;
+		return Character.toLowerCase(this.to.charAt(0)) - 97;
 	}
 
 	/**
 	 * @return means the index of the row where the pawn is moved from
 	 */
 	public int getRowFrom() {
-		return from.x;
+		return Integer.parseInt(this.from.charAt(1) + "") - 1;
 	}
 
 	/**
 	 * @return means the index of the row where the pawn is moved to
 	 */
 	public int getRowTo() {
-		return to.x;
+		return Integer.parseInt(this.to.charAt(1) + "") - 1;
 	}
-}//Action
+
+}

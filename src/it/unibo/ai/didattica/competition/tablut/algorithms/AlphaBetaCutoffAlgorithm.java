@@ -8,7 +8,6 @@ import it.unibo.ai.didattica.competition.tablut.game.MoveHistory;
 import it.unibo.ai.didattica.competition.tablut.util.Heuristics;
 import it.unibo.ai.didattica.competition.tablut.util.MyVector;
 
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 
@@ -45,35 +44,13 @@ public class AlphaBetaCutoffAlgorithm extends AbstractAlgorithms{
         bm = BoardManager.getInstance();
     }
 
-    /*
-    public AlphaBetaCutoffAlgorithm(Game game, HistoryCommandHandler handler, int maxDepth, float whiteWeights,
-                                    float h1Wheight, float h2Wheight, float h3Wheight, float h4Wheight,
-                                    float escapeCoefficient, float bridgeCoefficient, float safetyCoefficient,
-                                    char player) {
-        super(game, handler);
-        D = maxDepth;
-        heuristics = new Heuristics();
-
-        WHITE_WEIGHTS = whiteWeights;
-        PAWNS_NUMBER_WEIGHT = h1Wheight;
-        KING_SAFETY_WEIGHT = h2Wheight;
-        KING_ESCAPE_WEIGHT = h3Wheight;
-        BRIDGE_WEIGHT = h4Wheight;
-        ESCAPE_COEFFICIENT = escapeCoefficient;
-        BRIDGE_COEFFICIENT = bridgeCoefficient;
-        SAFETY_COEFFICIENT = safetyCoefficient;
-        this.myPlayer = player;
-        bm = BoardManager.getInstance();
-    }
-     */
-
     public MyVector[] searchForBestAction(GameState state ){
         startingTime = System.currentTimeMillis();
+        n_moves = 0;
         float alpha = Integer.MIN_VALUE;
         float beta = Integer.MAX_VALUE;
         MyVector[] bestAction = new MyVector[2];
-        float v = 0;
-        n_moves = 0;
+        float v;
 
         bestDepth = Integer.MAX_VALUE;
         curDepth = Integer.MAX_VALUE;
@@ -81,7 +58,9 @@ public class AlphaBetaCutoffAlgorithm extends AbstractAlgorithms{
         for(Map.Entry<MyVector, HashSet<MyVector>> entry : state.getMoves().entrySet() ){
             MyVector from = entry.getKey();
             for(MyVector to : entry.getValue() ){
-                if( (System.currentTimeMillis()-startingTime)/1000 > timeout) return bestAction;
+                if( (System.currentTimeMillis()-startingTime)/1000 > timeout-2){
+                    return bestAction;
+                }
 
                 v = minValue(game.result(state,from,to), alpha, beta, 1);
                 handler.undo();
@@ -99,7 +78,6 @@ public class AlphaBetaCutoffAlgorithm extends AbstractAlgorithms{
         }
 
         System.out.println(alpha);
-        System.out.println(n_moves);
 
         return bestAction;
     }//alphaBetaSearch
@@ -116,7 +94,7 @@ public class AlphaBetaCutoffAlgorithm extends AbstractAlgorithms{
             return eval();
         }
 
-        if( (System.currentTimeMillis()-startingTime)/1000 > timeout)
+        if( (System.currentTimeMillis()-startingTime)/1000 > timeout-2)
             return eval();
         //TERMINAL TEST ENDS
 
@@ -150,7 +128,7 @@ public class AlphaBetaCutoffAlgorithm extends AbstractAlgorithms{
             return eval();
         }
 
-        if( (System.currentTimeMillis()-startingTime)/1000 > timeout) return eval();
+        if( (System.currentTimeMillis()-startingTime)/1000 > timeout-2) return eval();
         //TERMINAL TEST ENDS
 
         float v = Integer.MAX_VALUE;
@@ -228,16 +206,6 @@ public class AlphaBetaCutoffAlgorithm extends AbstractAlgorithms{
         float wh = PAWNS_NUMBER_WEIGHT *wH1 + KING_SAFETY_WEIGHT *wKingSafety_escapeValue[0]
                 + KING_ESCAPE_WEIGHT *wKingSafety_escapeValue[1] + BRIDGE_WEIGHT *wBridgePosition;
 
-        /*
-        if( state.getPlayer() == myPlayer ){
-            if( myPlayer == BoardManager.B ) return -wh;
-            else return -bh;
-        }
-        else{
-            if( myPlayer == BoardManager.B ) return bh;
-            else return wh;
-        }
-        */
         if( myPlayer == BoardManager.B ){
             return bh;
         }

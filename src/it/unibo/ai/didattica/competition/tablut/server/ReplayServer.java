@@ -120,9 +120,9 @@ public class ReplayServer extends Server {
 			case 4:
 				state = new StateTablut();
 				break;
-			case 3:
-				state = new StateBrandub();
-				break;
+			//case 3:
+				//state = new StateBrandub();
+				//break;
 			default:
 				throw new IllegalStateException("Wrong gameC somehow!");
 		}
@@ -152,7 +152,7 @@ public class ReplayServer extends Server {
 	protected void runTurn(State state) throws IOException {
 		if (enableGui) {
 			if (initializedGui) {
-				theGui.update(state);
+				//theGui.update(state);
 			} else {
 				initializeGUI(state);
 				initializedGui = true;

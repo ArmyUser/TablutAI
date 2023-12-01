@@ -16,7 +16,7 @@ public class BoardManager
      */
     public static final byte W = (byte) 'W';
     public static final byte B = (byte) 'B';
-    public static final byte E = (byte) 'E';
+    public static final byte E = (byte) 'O';
     public static final byte T = (byte) 'T';
     public static final byte K = (byte) 'K';
 
@@ -189,7 +189,12 @@ public class BoardManager
 
         for( int i=0; i<board.length; i++ ){
             for (int j = 0; j < board.length; j++) {
-                board[i][j] = (byte) boardLinearString.charAt(k); //?????????
+                if( i==4 && j==4 &&  (byte) boardLinearString.charAt(k) == 'T' ){
+                    board[i][j] = E;
+                }
+                else {
+                    board[i][j] = (byte) boardLinearString.charAt(k); //?????????
+                }
                 k++;
             }
         }

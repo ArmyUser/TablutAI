@@ -12,7 +12,6 @@ import java.util.Date;
 import java.util.logging.*;
 
 import it.unibo.ai.didattica.competition.tablut.domain.*;
-import it.unibo.ai.didattica.competition.tablut.gui.Gui;
 import it.unibo.ai.didattica.competition.tablut.util.Configuration;
 import it.unibo.ai.didattica.competition.tablut.util.StreamUtils;
 
@@ -67,9 +66,9 @@ public class Server implements Runnable {
 
 	private int cacheSize;
 
-	private Game game;
+	private GameIF game;
 	private Gson gson;
-	protected Gui theGui;
+	//protected Gui theGui;
 
 	//Integer that represents the game type
 	protected int gameC;
@@ -85,8 +84,8 @@ public class Server implements Runnable {
 	}
 
 	public void initializeGUI(State state) {
-		this.theGui = new Gui(this.gameC);
-		this.theGui.update(state);
+		//this.theGui = new Gui(this.gameC);
+		//this.theGui.update(state);
 	}
 
 	/**
@@ -484,6 +483,7 @@ public class Server implements Runnable {
 		}
 
 		switch (this.gameC) {
+			/*
 		case 1:
 			state = new StateTablut();
 			this.game = new GameTablut(moveCache);
@@ -496,6 +496,7 @@ public class Server implements Runnable {
 			state = new StateBrandub();
 			this.game = new GameTablut(moveCache);
 			break;
+			*/
 		case 4:
 			state = new StateTablut();
 			state.setTurn(State.Turn.WHITE);
@@ -519,7 +520,7 @@ public class Server implements Runnable {
 			StreamUtils.writeString(blackState, theGson);
 			loggSys.fine("Invio messaggio ai giocatori");
 			if (enableGui) {
-				theGui.update(state);
+				//theGui.update(state);
 			}
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -577,7 +578,7 @@ public class Server implements Runnable {
 						System.out.println("TOO MANY ERRORS FOR BLACK PLAYER; PLAYER WHITE WIN!");
 						e.printStackTrace();
 						loggSys.warning("Chiusura sistema per troppi errori giocatore nero");
-						state.setTurn(Turn.WHITEWIN);
+						state.setTurn(State.Turn.WHITEWIN);
 						this.game.endGame(state);
 					} else {
 						System.out.println("Error for black player...");
@@ -589,7 +590,7 @@ public class Server implements Runnable {
 						System.out.println("TOO MANY ERRORS FOR WHITE PLAYER; PLAYER BLACK WIN!");
 						e.printStackTrace();
 						loggSys.warning("Chiusura sistema per troppi errori giocatore bianco");
-						state.setTurn(Turn.BLACKWIN);
+						state.setTurn(State.Turn.BLACKWIN);
 						this.game.endGame(state);
 					} else {
 						System.out.println("Error for white player...");
@@ -608,7 +609,7 @@ public class Server implements Runnable {
 			if (hoursoccurred > hourlimit) {
 				System.out.println("TIMEOUT! END OF THE GAME...");
 				loggSys.warning("Chiusura programma per timeout di " + hourlimit + " ore");
-				state.setTurn(Turn.DRAW);
+				state.setTurn(State.Turn.DRAW);
 			}
 
 			// SEND STATE TO PLAYERS
@@ -618,7 +619,7 @@ public class Server implements Runnable {
 				StreamUtils.writeString(blackState, theGson);
 				loggSys.fine("Invio messaggio ai client");
 				if (enableGui) {
-					theGui.update(state);
+					//theGui.update(state);
 				}
 			} catch (IOException e) {
 				e.printStackTrace();
