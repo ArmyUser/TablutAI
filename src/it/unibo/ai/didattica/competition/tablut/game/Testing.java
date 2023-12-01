@@ -211,8 +211,8 @@ public class Testing {
 
         //configuration
         byte[][] board = BoardManager.getInstance().getBoard();
-        board[0][3] = BoardManager.E;
-        board[0][4] = BoardManager.B;
+        board[0][3] = BoardManager.B;
+        board[0][4] = BoardManager.E;
         board[0][5] = BoardManager.E;
 
         //Black move
@@ -321,6 +321,6 @@ public class Testing {
         //testGeneralKingCapture(); OK!
         //testCitadelKingCapture(); OK!
         //testDoAndUndo();
-        //testCitadelsMoves();
+        testCitadelsMoves();
     }//main
 }//Testing

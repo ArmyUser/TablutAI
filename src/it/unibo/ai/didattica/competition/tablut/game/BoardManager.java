@@ -264,7 +264,7 @@ public class BoardManager
             if( board[to.x-1][to.y] == opposite ){
                 //Captured by 2 allies or by one allies and one citadel (empty throne included)
                 if( board[to.x-2][to.y] == currentPlayer ||  board[to.x-2][to.y] == eventualKing ||
-                        citadels.contains(new MyVector(to.x-2,to.y)) ){
+                        ( citadels.contains(new MyVector(to.x-2,to.y)) && board[to.x-2][to.y] == BoardManager.E ) ){
                     removePawn(to.x-1,to.y);
                     captured.add(new MyVector(to.x-1,to.y));
                 }
@@ -275,8 +275,8 @@ public class BoardManager
         if( to.x < 7 ){
             if( board[to.x+1][to.y] == opposite ){
                 //Captured by 2 allies or by one allies and one citadel (empty throne included)
-                if( board[to.x+2][to.y] == currentPlayer ||  board[to.x+2][to.y] == eventualKing
-                        || citadels.contains(new MyVector(to.x+2,to.y)) ) {
+                if( board[to.x+2][to.y] == currentPlayer ||  board[to.x+2][to.y] == eventualKing ||
+                        ( citadels.contains(new MyVector(to.x+2,to.y)) && board[to.x+2][to.y] == BoardManager.E ) ) {
                     removePawn(to.x+1,to.y);
                     captured.add(new MyVector(to.x+1,to.y));
                 }
@@ -287,8 +287,8 @@ public class BoardManager
         if( to.y < 7 ){
             if( board[to.x][to.y+1] == opposite ){
                 //Captured by 2 allies or by one allies and one citadel (empty throne included)
-                if( board[to.x][to.y+2] == currentPlayer ||  board[to.x][to.y+2] == eventualKing
-                        || citadels.contains(new MyVector(to.x,to.y+2)) ){
+                if( board[to.x][to.y+2] == currentPlayer ||  board[to.x][to.y+2] == eventualKing ||
+                        ( citadels.contains(new MyVector(to.x,to.y+2)) && board[to.x][to.y+2] == BoardManager.E ) ){
                     removePawn(to.x,to.y+1);
                     captured.add(new MyVector(to.x,to.y+1));
                 }
@@ -299,8 +299,8 @@ public class BoardManager
         if( to.y > 1 ){
             if( board[to.x][to.y-1] == opposite ){
                 //Captured by 2 allies or by one allies and one citadel (empty throne included)
-                if( board[to.x][to.y-2] == currentPlayer ||  board[to.x][to.y-2] == eventualKing
-                        || citadels.contains(new MyVector(to.x,to.y-2)) ){
+                if( board[to.x][to.y-2] == currentPlayer ||  board[to.x][to.y-2] == eventualKing ||
+                        ( citadels.contains(new MyVector(to.x,to.y-2)) && board[to.x][to.y-2] == BoardManager.E ) ){
                     removePawn(to.x,to.y-1);
                     captured.add(new MyVector(to.x,to.y-1));
                 }
