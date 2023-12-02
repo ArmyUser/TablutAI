@@ -1,2 +1,2 @@
 # TablutAI
-Questo è un implementazione del gioco Tablut, un gioco di strategia a due giocatori, ispirato al gioco vichingo Hnefatafl. Il progetto è scritto in Java.
+This is an implementation of an AI capable of playing tablut, a two-player strategic board game inspired by the Viking game Hnefatafl.
